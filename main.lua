@@ -8,68 +8,47 @@ end
 local WIDTH = 150
 local HEIGHT = 75
 
-
+scene = "fight"
 local enemies = {}
-local player = {basehealth = 300, baseatk = 10}
+local allies = {}
+local player = {baseHealth = 300, baseAtk = 10, maxHealth = 300, currentHealth = 300, currentAtk = 10}
+local playerBars = {health = {}, mana = {}}
 
-function drawLevel()
-    love.graphics.clear()
-    clearEnemies()
-    drawEnemy(1)
-    drawPlayer()
-    love.graphics.present()
+function love.load()
+    createPlayerBars()
 end
 
-function clearEnemies()
-    enemies = {}
-    return enemies or nil
-end
-
-function drawEnemy(numEnemy)
-    local x = 50
-    local y = ((numEnemy-1)*(HEIGHT+1))
-    love.graphics.setColor(255, 0, 0)
-    love.graphics.rectangle("fill", x, y, WIDTH, HEIGHT)
+function createPlayerBars()
     love.graphics.setColor(255,255,255)
-    love.graphics.rectangle("line", x, y, WIDTH+1, HEIGHT+1)
-    createEnemy(numEnemy)
-    local healthText = createEnemyHealthText(numEnemy)
-    local font = love.graphics.getFont()
-    love.graphics.setColor(0,0,0)
-    love.graphics.printf(healthText, font, x, y+30, 150, "center")
-end
-
-function createEnemy(numEnemy)
-    local enemy = {}
-    enemy.basehealth = 100
-    enemy.baseatk = 10
-    table.insert(enemies, enemy)
-    return enemies[numEnemy] or nil
-end
-
-function createEnemyHealthText(numEnemy)
-    local healthText = enemies[numEnemy].basehealth
-    return healthText or nil
-end
-
-function drawPlayer()
-    local x = 0
-    local y = 300
-    love.graphics.setColor(0, 255, 0)
-    love.graphics.rectangle("fill", x, y, WIDTH, HEIGHT)
-    love.graphics.setColor(255,255,255)
-    love.graphics.rectangle("line", x, y, WIDTH+1, HEIGHT+1)
-    local healthText = createPlayerHealthText()
-    local font = love.graphics.getFont()
-    love.graphics.setColor(0,0,0)
-    love.graphics.printf(healthText, font, x, y+30, 150, "center")
-end
-
-function createPlayerHealthText()
-    local healthText = player.basehealth
-    return healthText or nil
+    playerBars.health.background = love.graphics.rectangle("fill", love.graphics.getWidth()*0.43,love.graphics.getHeight()*(2/3), WIDTH+1, HEIGHT+1)
+    playerBars.mana.background = love.graphics.rectangle("fill", love.graphics.getWidth()*0.43,love.graphics.getHeight()*(2/3)+HEIGHT+2, WIDTH+1, HEIGHT/4+1)
 end
 
 function love.draw()
-    drawLevel()
+    if scene == "fight" then
+        --love.graphics.draw(playerBars.health.background)
+        --love.graphics.draw(playerBars.mana.background)
+        drawPlayerBars()--[[
+        for i = 1, #enemies do
+            drawEnemyBars(i)
+        end
+
+        for i = 1, #allies do
+            drawAllyBars(i)
+        end]]
+    end
+end
+
+function drawPlayerBars()
+    local green = 1 * (player.currentHealth/player.maxHealth)
+    local red = 1 - green
+    love.graphics.setColor(red, green, 0)
+    playerBars.health.healthBar = love.graphics.rectangle("fill", love.graphics.getWidth()*0.43,love.graphics.getHeight()*(2/3), WIDTH*player.currentHealth/player.maxHealth, HEIGHT)
+    if player.currentHealth > 0 then
+        player.currentHealth = player.currentHealth - 1
+    elseif player.currentHealth <= 0 then
+        player.currentHealth = player.maxHealth
+    end
+
+    debugPrint("Green: " .. green .. "\nRed: " .. red)
 end
