@@ -21,7 +21,7 @@ function Spells:CAST(spellName, castingUnit, targetTeam, targetIndex, enemies, a
     end
 
     if spellName == "heal"then
-
+        debugPrint("Caster Team: " .. casterTeam .. " Target Team: " .. tostring(targetTeam))
         if (targetTeam ~= casterTeam and not (casterTeam == "player" and targetTeam == "ally")) or targetTeam == nil then
             GiveError("Must Target Unit on Same Team", "Heal, CAST")
             return
@@ -36,9 +36,11 @@ function Spells:CAST(spellName, castingUnit, targetTeam, targetIndex, enemies, a
             allies[targetIndex]:addHealth(50)
             castingUnit:minusMana(20)
         end
-    end
 
-    
+        if casterTeam == "enemy" then
+            enemies[targetIndex]:addHealth(50)
+        end
+    end
 end
 
 function Spells:GET_SPELLSLOT(spellSlot)

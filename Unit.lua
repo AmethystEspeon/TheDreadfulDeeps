@@ -9,7 +9,10 @@ local unit = {
     mana = 0,
     baseAttack = 10,
     attack = 10,
-    team = "enemy"
+    attackInterval = 1,
+    timeSinceLastAttack = 0,
+    team = "enemy",
+    dead = false,
 };
 
 function unit:setMaxHealth(newMaxHealth)
@@ -27,14 +30,33 @@ function unit:minusHealth(amount)
     self.health = self.health - amount
     if self.health < 0 then
         self.health = 0
+        self:die()
     end
+end
+
+function unit:getHealth()
+    return self.health or nil
 end
 
 function unit:setAttack(newAttack)
     self.attack = newAttack
 end
 
+function unit:getAttack()
+    return self.attack
+end
+
+function unit:makeAttack(target)
+    if love.timer.getTime() - self.timeSinceLastAttack >= self.attackInterval then
+        target:minusHealth(self.attack)
+        self.timeSinceLastAttack = love.timer.getTime()
+    end
+end
+
 function unit:addMana(amount)
+    if self.mana == nil then
+        return
+    end
     self.mana = self.mana + amount
     if self.mana > self.maxMana then
         self.mana = self.maxMana
@@ -42,6 +64,9 @@ function unit:addMana(amount)
 end
 
 function unit:minusMana(amount)
+    if self.mana == nil then
+        return
+    end
     self.mana = self.mana - amount
     if self.mana < 0 then
         self.mana = 0
@@ -49,11 +74,34 @@ function unit:minusMana(amount)
 end
 
 function unit:getMana()
-    return self.mana
+    return self.mana or nil
+end
+
+function unit:hasMana()
+    if self.maxMana == nil or self.maxMana == 0 then
+        return false
+    else
+        return true
+    end
 end
 
 function unit:getTeam()
     return self.team
+end
+
+function unit:setAttackInterval(newAttackInterval)
+    self.attackInterval = newAttackInterval
+end
+
+function unit:getAttackInterval()
+    return self.attackInterval or nil
+end
+
+function unit:useAbility()
+end
+
+function unit:die()
+    self.dead = true
 end
 
 local function NewClass()

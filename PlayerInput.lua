@@ -6,15 +6,17 @@ end
 
 local PlayerInput = {};
 
-function PlayerInput:getMouseover()
+function PlayerInput:getMouseover(enemyFrames, allyFrames)
     local x, y = love.mouse.getPosition()
-    for i, frame in ipairs(EnemyFrames) do
+    for i, frame in ipairs(enemyFrames) do
         if x > frame.x and x < frame.x + frame.w and y > frame.y and y < frame.y + frame.h then
+            debugPrint("Mouseover team enemy")
             return "enemy", i
         end
     end
-    for i, frame in ipairs(AllyFrames) do
+    for i, frame in ipairs(allyFrames) do
         if x > frame.x and x < frame.x + frame.w and y > frame.y and y < frame.y + frame.h then
+            debugPrint("Mouseover team ally")
             return "ally", i
         end
     end
@@ -22,9 +24,8 @@ end
 
 
 
-function PlayerInput:FIGHT_keyCheck(key, scanCode, player, allUnits)
-    debugPrint(allUnits.allies[1].health)
-    local mouseoverTeam, mouseoverIndex = PlayerInput:getMouseover()
+function PlayerInput:FIGHT_keyCheck(key, scanCode, player, allUnits, frames)
+    local mouseoverTeam, mouseoverIndex = PlayerInput:getMouseover(frames[1], frames[2])
     if key == "q" or key == "Q" then
         Spells:CAST(Spells:GET_SPELLSLOT(1), player, mouseoverTeam, mouseoverIndex, allUnits.enemies, allUnits.allies)
     elseif key == "w" or key == "W" then
