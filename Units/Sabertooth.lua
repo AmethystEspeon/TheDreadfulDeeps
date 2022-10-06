@@ -41,6 +41,7 @@ function Sabertooth:useAbility(dt)
         local target = Board:getLowestHealthAliveEnemy()
         if target then
             self.spells[1]:cast(target)
+            self.mana = 0;
         end
     end
 end

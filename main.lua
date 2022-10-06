@@ -17,6 +17,13 @@ local enemy = UnitList.EarthShatterer();
 Board:addAlly(player);
 Board:addAlly(ally);
 Board:addEnemy(enemy);
+ 
+--Testing Spells Here-
+table.insert(player.spells, SpellList.Cauterize(player));
+table.insert(player.spells, SpellList.Regeneration(player));
+player:placeInActiveSpellList(player.spells[2], 2);
+player:placeInActiveSpellList(player.spells[3], 3);
+
 
 function love.draw()
     if scene.fight then

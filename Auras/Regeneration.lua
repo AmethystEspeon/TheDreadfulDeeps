@@ -3,25 +3,26 @@ local _,Aura = unpack(require("Auras.Aura"));
 local _,Buff = unpack(require("Auras.Buff"));
 local ImageList = require("Images.ImageList");
 
-local Cauterize = {};
+local Regeneration = {};
 
-function Cauterize:init()
-    self.image = ImageList.Cauterize;
+function Regeneration:init()
+    self.image = ImageList.Regeneration;
     self.timeSinceLastTick = 0;
-    self.tickInterval = 0.1;
-    self.startingDuration = 5;
-    self.currentDuration = 5;
-    self.healPerTick = 20;
+    self.tickInterval = 0.25;
+    self.startingDuration = 10;
+    self.currentDuration = 10;
+    self.healPerTick = 10;
+    --Total Healing: (1/0.5)*5*10 = 100
 end
 
-function CreateCauterize(target)
+function CreateRegeneration(target)
     assert(target);
-    local cauterizeBuff = Create(Aura,Buff,Cauterize);
-    cauterizeBuff.target = target;
-    return cauterizeBuff;
+    local regenerationBuff = Create(Aura,Buff,Regeneration);
+    regenerationBuff.target = target;
+    return regenerationBuff;
 end
 
-function Cauterize:tick(dt)
+function Regeneration:tick(dt)
     self.timeSinceLastTick = self.timeSinceLastTick + dt;
     if self.timeSinceLastTick >= self.tickInterval then
         self.target:addHealth(self.healPerTick);
@@ -35,4 +36,4 @@ function Cauterize:tick(dt)
     end
 end
 
-return {CreateCauterize, Cauterize};
+return {CreateRegeneration, Regeneration};

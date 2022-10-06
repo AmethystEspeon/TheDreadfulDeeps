@@ -9,30 +9,30 @@ function Heal:init()
     self.maxCooldown = 3;
     self.currentCooldown = 0;
     self.manaCost = 30;
-    self.heal = 30;
+    self.heal = 300;
+
+    self.castableOnSame = true
 end
 
 function Heal:cast(target)
-    assert(target)
-    assert(self.castingUnit)
-    if not self.castingUnit:isSameTeam(target) then
-        print("Error: Heal can only be cast on allies.")
-        return
+    if not target then
+        print("No target selected");
+        return;
     end
-    if target:getHealth() == target:getMaxHealth() then
-        print("Error: Target is already at max health.")
-        return
+    assert(self.castingUnit);
+    if not self:isCastable(target) then
+        return;
     end
-    target:addHealth(self.heal)
-    self.castingUnit:minusMana(self.manaCost)
+    target:addHealth(self.heal);
+    self.castingUnit:minusMana(self.manaCost);
     self.currentCooldown = self.maxCooldown;
 end
 
 function CreateHeal(caster)
     assert(caster);
-    local healSpell = Create(Spell,Heal);
-    healSpell.castingUnit = caster;
-    return healSpell;
+    local newHeal = Create(Spell,Heal);
+    newHeal.castingUnit = caster;
+    return newHeal;
 end
 
 return {CreateHeal, Heal};

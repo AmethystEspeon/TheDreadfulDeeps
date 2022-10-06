@@ -7,17 +7,22 @@ local Cauterize = {};
 
 function Cauterize:init()
     self.image = ImageList.Cauterize;
-    self.maxCooldown = 10;
+    self.maxCooldown = 5;
     self.currentCooldown = 0;
-    self.manaCost = 20;
-    self.healthCost = 20;
+    self.manaCost = 10;
+    self.healthCost = 250;
+
+    self.castableOnSame = true;
+    self.castableOnMaxHealth = true;
 end
 
 function Cauterize:cast(target)
-    assert(target);
+    if not target then
+        print("No target selected");
+        return;
+    end
     assert(self.castingUnit);
-    if not self.castingUnit:isSameTeam(target) then
-        print("Error: Cauterize can only be cast on allies.");
+    if not self:isCastable(target) then
         return;
     end
     target:minusHealth(self.healthCost);

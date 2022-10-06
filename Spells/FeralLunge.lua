@@ -11,22 +11,22 @@ function FeralLunge:init()
     self.manaCost = 30;
     self.damage = 100;
     self.lostHealthMultiplier = 0.3;
+
+    self.castableOnOpposing = true;
+    self.castableOnMaxHealth = true;
 end
 
 function FeralLunge:cast(target)
-    assert(target)
-    assert(self.castingUnit);
-    if self.castingUnit:isSameTeam(target) then
-        print("Error: Feral Lunge can only be cast on enemies.")
+    if not target then
+        print("No target selected");
         return
     end
-    if self.castingUnit.isHealer and self.castingUnit:getMana() < self.manaCost then
-        print("Error: Not enough mana to cast Feral Lunge.")
+    assert(self.castingUnit);
+    if not self:isCastable(target) then
         return
     end
     local additionalDamage = (target:getMaxHealth() - target:getHealth())*self.lostHealthMultiplier;
     target:minusHealth(self.damage + additionalDamage);
-    print("Feral Lunge dealt "..self.damage + additionalDamage);
     self.castingUnit:minusMana(self.manaCost);
     self.currentCooldown = self.maxCooldown;
 end

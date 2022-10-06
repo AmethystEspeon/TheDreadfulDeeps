@@ -42,6 +42,9 @@ end
 
 function Unit:minusHealth(amount)
     assert(self.health);
+    if self.isDamageImmune then
+        return --Don't take damage
+    end
     self.health = self.health - amount;
     if self.health <= 0 then
         self.health = 0;
@@ -101,6 +104,16 @@ function Unit:setMaxMana(newMaxMana)
     self.maxMana = newMaxMana;
 end
 
+-------------
+----AURAS----
+-------------
+function Unit:addBuff(buff)
+    table.insert(self.buffs, buff);
+    if buff.onApply then
+        buff:onApply();
+    end
+end
+
 ---------------
 ----GENERAL----
 ---------------
@@ -125,10 +138,6 @@ function Unit:isSameTeam(otherUnit)
         return true;
     end
     return false;
-end
-
-function Unit:addBuff(buff)
-    table.insert(self.buffs, buff);
 end
 
 function CreateUnit()

@@ -199,6 +199,9 @@ function Board:reapBuffs()
     for i, v in ipairs(self.allies) do
         for j , w in ipairs(v.buffs) do
             if w.expired then
+                if w.onExpire then
+                    w:onExpire();
+                end
                 table.remove(v.buffs, j);
             end
         end
@@ -206,6 +209,9 @@ function Board:reapBuffs()
     for i, v in ipairs(self.enemies) do
         for j , w in ipairs(v.buffs) do
             if w.expired then
+                if w.onExpire then
+                    w:onExpire();
+                end
                 table.remove(v.buffs, j);
             end
         end

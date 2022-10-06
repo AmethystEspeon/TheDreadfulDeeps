@@ -36,6 +36,35 @@ function Spell:tickCooldown(dt)
     end
 end
 
+function Spell:isCastable(target)
+    if self.castingUnit.isHealer then
+        if self.castingUnit.mana < self.manaCost then
+            return false;
+        end
+    end
+    if self.castingUnit:isDead() and not self.castableWhileDead then
+        print("Cannot cast while dead");
+        return false;
+    end
+    if self.castingUnit:isSameTeam(target) and not self.castableOnSame then
+        print("Cannot cast on same team");
+        return false;
+    end
+    if not self.castingUnit:isSameTeam(target) and not self.castableOnOpposing then
+        print("Cannot cast on opposing team");
+        return false;
+    end
+    if target:isDead() and not self.castableOnDead then
+        print("Cannot cast on dead");
+        return false;
+    end
+    if target:getHealth() == target:getMaxHealth() and not self.castableOnMaxHealth then
+        print("Cannot cast on max health");
+        return false;
+    end
+    return true;
+end
+
 function CreateSpell()
     return Create(Spell);
 end

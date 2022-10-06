@@ -4,6 +4,11 @@ local Aura = {};
 
 function Aura:init()
     self.expired = false;
+    self.isDispellable = true;
+end
+
+function Aura:dispell(caster)
+    self.expired = true;
 end
 
 function Aura:drawDuration(x, y, scale)

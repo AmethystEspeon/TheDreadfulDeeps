@@ -45,6 +45,7 @@ function EarthShatterer:useAbility(dt)
         local target = Board:getTankPreferredTarget();
         if target then
             self.spells[1]:cast(target);
+            self.mana = 0;
         end
     end
 end

@@ -10,18 +10,19 @@ function Shatter:init()
     self.currentCooldown = 0;
     self.manaCost = 20;
     self.damage = 800;
+
+    self.castableOnOpposing = true;
+    self.castableOnMaxHealth = true;
 end
 
 function Shatter:cast(target)
-    assert(target);
-    assert(self.castingUnit);
-    if self.castingUnit:isSameTeam(target) then
-        print("Error: Shatter can only be cast on enemies.");
-        return;
+    if not target then
+        print("No target selected");
+        return
     end
-    if self.castingUnit.isHealer and self.castingUnit:getMana() < self.manaCost then
-        print("Error: Not enough mana to cast Shatter.");
-        return;
+    assert(self.castingUnit);
+    if not self:isCastable(target) then
+        return
     end
     target:minusHealth(self.damage);
     self.castingUnit:minusMana(self.manaCost);
