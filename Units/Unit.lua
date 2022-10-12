@@ -114,6 +114,13 @@ function Unit:addBuff(buff)
     end
 end
 
+function Unit:addDebuff(debuff)
+    table.insert(self.debuffs, debuff);
+    if debuff.onApply then
+        debuff:onApply();
+    end
+end
+
 ---------------
 ----GENERAL----
 ---------------
@@ -136,6 +143,15 @@ function Unit:isSameTeam(otherUnit)
     end
     if self.isEnemy and self.isEnemy == otherUnit.isEnemy then
         return true;
+    end
+    return false;
+end
+
+function Unit:hasSpell(spellIdentifier)
+    for _, spell in pairs(self.spells) do
+        if spell.name == spellIdentifier then
+            return true;
+        end
     end
     return false;
 end

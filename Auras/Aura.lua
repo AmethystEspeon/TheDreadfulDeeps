@@ -7,7 +7,7 @@ function Aura:init()
     self.isDispellable = true;
 end
 
-function Aura:dispell(caster)
+function Aura:dispel(caster)
     self.expired = true;
 end
 

@@ -13,6 +13,8 @@ function Player:init()
     self.attackDamage = 10;
     self.activeSpellList = {};
     self.isHealer = true;
+
+    self.items = {};
 end
 
 local function setActiveSpellList(playerUnit)

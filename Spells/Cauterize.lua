@@ -2,6 +2,7 @@ local Create = require("Core.Create");
 local _, Spell = unpack(require("Spells.Spell"));
 local CreateCauterizeBuff = unpack(require("Auras.Cauterize"));
 local ImageList = require("Images.ImageList");
+local SpellIdentifierList = require("Spells.SpellIdentifierList");
 
 local Cauterize = {};
 
@@ -12,8 +13,26 @@ function Cauterize:init()
     self.manaCost = 10;
     self.healthCost = 250;
 
+    self.name = SpellIdentifierList.Cauterize;
+    self.rarity = SpellIdentifierList.Rarity.Common;
+
     self.castableOnSame = true;
     self.castableOnMaxHealth = true;
+end
+
+function Cauterize:getCardCount(preventDupes)
+    local cards = 1;
+
+    if self.castingUnit:hasSpell(self.name) and preventDupes then
+        cards = 0;
+        return cards;
+    end
+
+    if self.castingUnit:hasSpell(SpellIdentifierList.Regeneration) then
+        cards = cards+1;
+    end
+
+    return cards;
 end
 
 function Cauterize:cast(target)

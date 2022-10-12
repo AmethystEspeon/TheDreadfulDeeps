@@ -3,6 +3,7 @@ local _, Unit = unpack(require("Units.Unit"));
 local _, Enemy = unpack(require("Units.Enemy"));
 local SpellList = require("Spells.SpellList");
 local Board = require("Core.Board")
+local UnitIdentifierList = require("Units.UnitIdentifierList");
 
 local EarthShatterer = {};
 ------------
@@ -24,6 +25,8 @@ function EarthShatterer:init()
     self.manaPerSecond = 1;
     self.manaTickRate = 0.1;
     self.timeSinceLastMana = 0;
+
+    self.name = UnitIdentifierList.EarthShatterer;
 end
 
 function EarthShatterer:attack(dt)

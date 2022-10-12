@@ -2,6 +2,7 @@ local Create = require("Core.Create");
 local _, Spell = unpack(require("Spells.Spell"));
 local CreateMiracleBuff = unpack(require("Auras.Miracle"));
 local ImageList = require("Images.ImageList");
+local SpellIdentifierList = require("Spells.SpellIdentifierList");
 
 local Miracle = {};
 ------------
@@ -19,9 +20,23 @@ function Miracle:init()
     self.currentCooldown = 0;
     self.manaCost = 600;
 
+    self.name = SpellIdentifierList.Miracle;
+    self.rarity = SpellIdentifierList.Rarity.Legendary;
+
     self.castableOnSame = true;
     self.castableOnDead = true;
     self.castableOnMaxHealth = true;
+end
+
+function Miracle:getCardCount(preventDupes)
+    local cards = 1;
+
+    if self.castingUnit:hasSpell(self.name) and preventDupes then
+        cards = 0;
+        return cards;
+    end
+
+    return cards;
 end
 
 function Miracle:cast(target)

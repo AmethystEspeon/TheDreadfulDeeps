@@ -1,6 +1,7 @@
 local Create = require("Core.Create");
 local _, Spell = unpack(require("Spells.Spell"));
 local ImageList = require("Images.ImageList");
+local SpellIdentifierList = require("Spells.SpellIdentifierList");
 
 local Heal = {};
 
@@ -11,7 +12,21 @@ function Heal:init()
     self.manaCost = 30;
     self.heal = 300;
 
+    self.name = SpellIdentifierList.Heal;
+    self.rarity = SpellIdentifierList.Rarity.Common;
+
     self.castableOnSame = true
+end
+
+function Heal:getCardCount(preventDupes)
+    local cards = 1;
+
+    if self.castingUnit:hasSpell(self.name) and preventDupes then
+        cards = 0;
+        return cards;
+    end
+
+    return cards;
 end
 
 function Heal:cast(target)

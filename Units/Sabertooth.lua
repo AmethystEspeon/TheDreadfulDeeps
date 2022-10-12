@@ -4,6 +4,7 @@ local _, Ally = unpack(require("Units.Ally"));
 local SpellList = require("Spells.SpellList");
 local Board = require("Core.Board");
 local Sabertooth = {};
+local UnitIdentifierList = require("Units.UnitIdentifierList");
 ----------------
 ----ANALYSIS----
 ----------------
@@ -20,6 +21,8 @@ function Sabertooth:init()
     self.isDPS = true
     self.attackInterval = 0.5;
     self.timeSinceLastAttack = self.attackInterval;
+
+    self.name = UnitIdentifierList.Sabertooth;
 end
 
 function Sabertooth:attack(dt)

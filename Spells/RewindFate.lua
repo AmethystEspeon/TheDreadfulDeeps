@@ -2,6 +2,7 @@ local Create = require("Core.Create");
 local _, Spell = unpack(require("Spells.Spell"));
 local CreateRewindFateBuff = unpack(require("Auras.RewindFate"));
 local ImageList = require("Images.ImageList");
+local SpellIdentifierList = require("Spells.SpellIdentifierList");
 
 local RewindFate = {};
 ------------
@@ -19,8 +20,22 @@ function RewindFate:init()
     self.currentCooldown = 0;
     self.manaCost = 200;
 
+    self.name = SpellIdentifierList.RewindFate;
+    self.rarity = SpellIdentifierList.Rarity.Epic;
+
     self.castableOnSame = true;
     self.castableOnMaxHealth = true;
+end
+
+function RewindFate:getCardCount(preventDupes)
+    local cards = 1;
+
+    if self.castingUnit:hasSpell(self.name) and preventDupes then
+        cards = 0;
+        return cards;
+    end
+
+    return cards;
 end
 
 function RewindFate:cast(target)

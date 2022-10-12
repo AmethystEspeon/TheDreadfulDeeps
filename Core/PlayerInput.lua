@@ -1,8 +1,9 @@
 local Board = require("Core.Board");
+local Reward = require("Core.Reward")
 
 local PlayerInput = {};
 
-function PlayerInput:getMouseover(enemies, allies)
+function PlayerInput:fightGetMouseover(enemies, allies)
     local x, y = love.mouse.getPosition();
     for i, enemy in ipairs(enemies) do
         if x > enemy.boardPosition.x and x < enemy.boardPosition.x + enemy.boardPosition.w and y > enemy.boardPosition.y and y < enemy.boardPosition.y + enemy.boardPosition.h then
@@ -16,8 +17,17 @@ function PlayerInput:getMouseover(enemies, allies)
     end
 end
 
+function PlayerInput:rewardGetMouseover(rewards)
+    local x, y = love.mouse.getPosition();
+    for i, reward in ipairs(rewards) do
+        if x > reward.buttonPos.x and x < reward.buttonPos.x + reward.buttonPos.w and y > reward.buttonPos.y and y < reward.buttonPos.y + reward.buttonPos.h then
+            return reward;
+        end
+    end
+end
+
 function PlayerInput:fightSceneKeyCheck(key, scanCode, playerUnit)
-    local mouseoverUnit = PlayerInput:getMouseover(Board.enemies, Board.allies);
+    local mouseoverUnit = PlayerInput:fightGetMouseover(Board.enemies, Board.allies);
     if key == "q" or key == "Q" then
         playerUnit:castSpellInSlot(mouseoverUnit, 1);
     elseif key == "w" or key == "W" then

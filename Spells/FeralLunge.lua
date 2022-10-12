@@ -1,6 +1,7 @@
 local Create = require("Core.Create");
 local _, Spell = unpack(require("Spells.Spell"));
 local ImageList = require("Images.ImageList");
+local SpellIdentifierList = require("Spells.SpellIdentifierList");
 
 local FeralLunge = {};
 
@@ -11,6 +12,9 @@ function FeralLunge:init()
     self.manaCost = 30;
     self.damage = 100;
     self.lostHealthMultiplier = 0.3;
+
+    self.name = SpellIdentifierList.FeralLunge;
+    --self.rarity = SpellIdentifierList.Rarity.Epic;
 
     self.castableOnOpposing = true;
     self.castableOnMaxHealth = true;

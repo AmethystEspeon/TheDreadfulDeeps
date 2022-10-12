@@ -7,6 +7,7 @@ SpellList = {
     Miracle = unpack(require("Spells.Miracle")),
     RewindFate = unpack(require("Spells.RewindFate")),
     ArcaneConversion = unpack(require("Spells.ArcaneConversion")),
+    PrayToDarkness = unpack(require("Spells.PrayToDarkness")),
 }
 
 return SpellList

@@ -4,6 +4,7 @@ local _, Ally = unpack(require("Units.Ally"));
 local _, Player = unpack(require("Units.Player"));
 local SpellList = require("Spells.SpellList");
 local Board = require("Core.Board");
+local UnitIdentifierList = require("Units.UnitIdentifierList");
 
 local Priest = {};
 
@@ -22,6 +23,8 @@ function Priest:init()
     self.attackDamage = 20;
     self.attackInterval = 1;
     self.timeSinceLastAttack = self.attackInterval;
+
+    self.name = UnitIdentifierList.Priest;
 end
 
 function Priest:attack(dt)
