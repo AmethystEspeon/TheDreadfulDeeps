@@ -2,6 +2,10 @@ local Create = require("Core.Create");
 
 Spell = {};
 
+function Spell:init()
+    self.description = "test"
+end
+
 function Spell:drawCooldown(x, y, scale)
     assert(self.image);
     if not self.currentCooldown or not self.maxCooldown then

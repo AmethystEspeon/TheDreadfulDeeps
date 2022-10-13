@@ -6,6 +6,7 @@ local SpellIdentifierList = require("Spells.SpellIdentifierList");
 
 local Cauterize = {};
 
+local descBuff = CreateCauterizeBuff("dummy");
 function Cauterize:init()
     self.image = ImageList.Cauterize;
     self.maxCooldown = 5;
@@ -18,6 +19,13 @@ function Cauterize:init()
 
     self.castableOnSame = true;
     self.castableOnMaxHealth = true;
+
+    self.description = "Deals damage to an ally and applies a strong heal over time." .. "\n\n" ..
+        "MP Cost: " .. tostring(self.manaCost) ..
+        "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
+        "\nDuration: " .. tostring(descBuff.startingDuration) .. "s" ..
+        "\nDamage: " ..tostring(self.healthCost) ..
+        "\nHeal = " .. tostring(descBuff.healPerTick/descBuff.tickInterval) .. "/s";
 end
 
 function Cauterize:getCardCount(preventDupes)

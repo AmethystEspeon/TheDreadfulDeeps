@@ -16,7 +16,10 @@ function CreateRewindFate(target)
     rewindFateBuff.target = target;
     rewindFateBuff.previousHealth = target.health;
     rewindFateBuff.previousMana = target.mana;
-    rewindFateBuff.previousDead = target.isDead();
+    --TODO: Find a different way around this.
+    if target ~= "dummy" then
+        rewindFateBuff.previousDead = target.isDead();
+    end
     --TODO: Make it rewind other buffs maybe?
     return rewindFateBuff;
 end

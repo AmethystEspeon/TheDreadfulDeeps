@@ -14,6 +14,7 @@ local Miracle = {};
 --Possibly should lower caster mana regen rate significantly for a period
 --of time after casting.
 ------------
+local descBuff = CreateMiracleBuff("dummy");
 function Miracle:init()
     self.image = ImageList.Miracle;
     self.maxCooldown = 300;
@@ -26,6 +27,11 @@ function Miracle:init()
     self.castableOnSame = true;
     self.castableOnDead = true;
     self.castableOnMaxHealth = true;
+
+    self.description = "A legendary spell that brings an ally back from the dead, fully heals them, and prevents any damage dealth from any source for a short period of time." .. "\n\n" ..
+        "MP Cost: " .. tostring(self.manaCost) ..
+        "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
+        "\nInvincibility Duration: " .. tostring(descBuff.startingDuration) .. "s";
 end
 
 function Miracle:getCardCount(preventDupes)

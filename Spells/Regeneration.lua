@@ -12,6 +12,7 @@ local Regeneration = {};
 --cooldown. However, the spell stacks so you can get a serious amount of healing
 --by spamming it on a character. Will synergize with some heal over time buffs.
 ------------
+local descBuff = CreateRegenerationBuff("dummy");
 function Regeneration:init()
     self.image = ImageList.Regeneration;
     self.maxCooldown = .50;
@@ -23,6 +24,12 @@ function Regeneration:init()
 
     self.castableOnSame = true;
     self.castableOnMaxHealth = true;
+
+    self.description = "A spammable spell that applies a small heal over time. Stacks with itself." .. "\n\n" ..
+        "MP Cost: " .. tostring(self.manaCost) ..
+        "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
+        "\nDuration: " .. tostring(descBuff.startingDuration) .. "s" ..
+        "\nHeal = " .. tostring(descBuff.healPerTick/descBuff.tickInterval) .. "/s";
 end
 
 function Regeneration:getCardCount(preventDupes)

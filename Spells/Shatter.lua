@@ -23,6 +23,11 @@ function Shatter:init()
 
     self.castableOnOpposing = true;
     self.castableOnMaxHealth = true;
+
+    self.description = "A very long cooldown ability that does massive damage to an opponent. On NPCs they will always target the tank if possible." .. "\n\n" ..
+        "MP Cost: " .. tostring(self.manaCost) ..
+        "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
+        "\nDamage: " ..tostring(self.damage);
 end
 
 function Shatter:cast(target)

@@ -14,6 +14,7 @@ local RewindFate = {};
 --
 --If you use it on yourself, it costs all of your mana.
 ------------
+local descBuff = CreateRewindFateBuff("dummy");
 function RewindFate:init()
     self.image = ImageList.RewindFate;
     self.maxCooldown = 120;
@@ -25,6 +26,12 @@ function RewindFate:init()
 
     self.castableOnSame = true;
     self.castableOnMaxHealth = true;
+
+    self.description = "Rewinds the fate of a target ally, saving their current state in time. After a short delay, the target will be restored to their previous state, even through " ..
+        "death. It exhausts all mana after use when targeted on yourself." .. "\n\n" ..
+        "MP Cost: " .. tostring(self.manaCost) ..
+        "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
+        "\nRewind Duration: " .. tostring(descBuff.startingDuration) .. "s";
 end
 
 function RewindFate:getCardCount(preventDupes)

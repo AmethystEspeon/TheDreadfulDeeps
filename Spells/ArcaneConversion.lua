@@ -6,6 +6,7 @@ local SpellIdentifierList = require("Spells.SpellIdentifierList");
 
 local ArcaneConversion = {};
 
+local descBuff = CreateArcaneConversionBuff("dummy",0);
 function ArcaneConversion:init()
     self.image = ImageList.ArcaneConversion;
     self.maxCooldown = 20;
@@ -17,6 +18,13 @@ function ArcaneConversion:init()
 
     self.castableOnSame = true;
     self.castableOnMaxHealth = true;
+
+    self.description = "Dispels all debuffs from an ally and converts them into a heal over time that grows in strength per debuff dispelled." .. "\n\n" ..
+        "MP Cost: " .. tostring(self.manaCost) ..
+        "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
+        "\nDuration: " .. tostring(descBuff.startingDuration) .. "s" ..
+        "\nHeal = " ..tostring(descBuff.healPerTick/descBuff.tickInterval) .. "/s" .. "\nAdditional Heal per Debuff: " ..tostring(descBuff.healPerTick/descBuff.tickInterval) ..
+        "/s";
 end
 
 function ArcaneConversion:getCardCount(preventDupes)

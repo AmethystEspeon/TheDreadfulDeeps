@@ -18,6 +18,11 @@ function FeralLunge:init()
 
     self.castableOnOpposing = true;
     self.castableOnMaxHealth = true;
+
+    self.description = "A long cooldown ability that deals damage to an opponent based on their missing HP. On NPCs they will always target the lowest HP opponent." .. "\n\n" ..
+        "MP Cost: " .. tostring(self.manaCost) ..
+        "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
+        "\nDamage: " ..tostring(self.damage) .. " + " .. tostring(self.lostHealthMultiplier) .. "x missing HP";
 end
 
 function FeralLunge:cast(target)

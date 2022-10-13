@@ -4,7 +4,12 @@ ImageList = {
     Miracle = love.graphics.newImage("images/Miracle.png"),
     FeralLunge = love.graphics.newImage("images/FeralLunge.png"),
     Shatter = love.graphics.newImage("images/Shatter.png"),
-    Regeneration = love.graphics.newImage("images/Regeneration.png")
+    Regeneration = love.graphics.newImage("images/Regeneration.png"),
+    ArcaneConversion = love.graphics.newImage("images/Regeneration.png"),
+    Sabertooth = love.graphics.newImage("images/Regeneration.png"),
+    PrayToDarkness = love.graphics.newImage("images/Regeneration.png"),
+    RewindFate = love.graphics.newImage("images/Regeneration.png"),
+
 }
 
 return ImageList

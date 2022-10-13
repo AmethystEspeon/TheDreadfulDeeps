@@ -16,6 +16,11 @@ function Heal:init()
     self.rarity = SpellIdentifierList.Rarity.Common;
 
     self.castableOnSame = true
+
+    self.description = "A small instant heal on a low cooldown." .. "\n\n" ..
+        "MP Cost: " .. tostring(self.manaCost) ..
+        "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
+        "\nHeal: " ..tostring(self.heal);
 end
 
 function Heal:getCardCount(preventDupes)

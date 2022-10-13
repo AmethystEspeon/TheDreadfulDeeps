@@ -13,6 +13,8 @@ local PrayToDarkness = {};
 --The DoT is stackable. Meant to be used with the debuff package
 --(ie: Auras\ArcaneConversion.lua).
 ------------
+
+local descBuff = CreatePrayToDarknessDebuff("dummy");
 function PrayToDarkness:init()
     self.image = ImageList.PrayToDarkness;
     self.maxCooldown = 8;
@@ -24,6 +26,13 @@ function PrayToDarkness:init()
     self.rarity = SpellIdentifierList.Rarity.Common;
 
     self.castableOnSame = true;
+
+    self.description = "Heals an ally but then damages them slowly over time." .. "\n\n" ..
+        "MP Cost: " .. tostring(self.manaCost) ..
+        "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
+        "\nDuration: " .. tostring(descBuff.startingDuration) .. "s" ..
+        "\nHeal: " .. tostring(self.heal) ..
+        "\nDamage: " .. tostring(descBuff.damagePerTick/descBuff.tickInterval) .. "/s";
 end
 
 function PrayToDarkness:getCardCount(preventDupes)

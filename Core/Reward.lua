@@ -79,6 +79,7 @@ local function getCard(rarity, randomCard)
             end
             randomCard = randomCard - v.Cards;
             if randomCard <= 0 then
+                v.inRewards = true;
                 return v.Spell;
             end
             ::ENDCOMMON::
@@ -91,6 +92,7 @@ local function getCard(rarity, randomCard)
             end
             randomCard = randomCard - v.Cards;
             if randomCard <= 0 then
+                v.inRewards = true;
                 return v.Spell;
             end
             ::ENDRARE::
@@ -103,6 +105,7 @@ local function getCard(rarity, randomCard)
             end
             randomCard = randomCard - v.Cards;
             if randomCard <= 0 then
+                v.inRewards = true;
                 return v.Spell;
             end
             ::ENDEPIC::
@@ -115,6 +118,7 @@ local function getCard(rarity, randomCard)
             end
             randomCard = randomCard - v.Cards;
             if randomCard <= 0 then
+                v.inRewards = true;
                 return v.Spell;
             end
             ::ENDLEGENDARY::
@@ -126,6 +130,8 @@ end
 function Reward:generateReward(minimumRarity, maximumRarity)
     local rarity = self:getRandomRarity(minimumRarity, maximumRarity);
     local cards = 0;
+    CardPool:checkCardCount(false);
+    print(rarity)
     if rarity == SpellIdentifierList.Rarity.Common then
         cards = CardPool.Common.Cards;
     elseif rarity == SpellIdentifierList.Rarity.Rare then
@@ -136,7 +142,9 @@ function Reward:generateReward(minimumRarity, maximumRarity)
         cards = CardPool.Legendary.Cards;
     end
     local randomCard = math.random(cards);
-    return getCard(rarity, randomCard);
+    local randomSpell = getCard(rarity, randomCard);
+    CardPool:setInRewards(randomSpell, true);
+    return randomSpell;
 end
 
 function Reward:chooseReward(reward, player)
@@ -147,6 +155,11 @@ function Reward:chooseReward(reward, player)
         table.insert(player.items, reward);
     elseif reward.spell then
         table.insert(player.spells, reward);
+    end
+    for i, v in pairs(self.rewards) do
+        if v ~= reward then
+            CardPool:setInRewards(v, false);
+        end
     end
     Reward:clearRewards();
 
@@ -164,39 +177,56 @@ function Reward:drawGrayScreen(screenWidth, screenHeight)
 end
 
 function Reward:drawReward(screenWidth, screenHeight)
+    local partitionHeight = screenHeight*0.8;
+    local partitionWidth = screenWidth*0.3;
+    local centerX = screenWidth*0.5;
+    local centerY = screenHeight*0.5;
     local scale = 0.3;
     love.graphics.push();
     
-    --get width of reward screen
+    --get width of reward screen--
     local totalWidth = 0;
+    --local totalHeight = partitionHeight;
     for i, v in ipairs(self.rewards) do
-        totalWidth = totalWidth + screenWidth*0.3;
+        totalWidth = totalWidth + partitionWidth;
     end
-    --get X positions of each reward
-    for i, v in ipairs(self.rewards) do
-        self.rewards[i].xPos = screenWidth*0.5 - totalWidth*0.5+totalWidth/#self.rewards*(i-1);
+    
+    --get reward table X position--
+    local rewardTableX = centerX - totalWidth*0.5;
+    local rewardTableY = centerY - partitionHeight*0.5;
+
+    --get startingx for each reward--
+    for i = 1, #self.rewards do
+        self.rewards[i].startingX = rewardTableX + (i-1)*partitionWidth;
     end
+
     --draw rectangle for all rewards
-    love.graphics.setColor(207,185,151,1); --Beige color picks I guess?
-    love.graphics.rectangle("fill", 1/2*totalWidth, 50, totalWidth, screenHeight*0.8);
+    love.graphics.setColor(love.math.colorFromBytes(207,185,151)); --Beige color picks I guess?
+    love.graphics.rectangle("fill", rewardTableX, rewardTableY, totalWidth, partitionHeight);
     
     --draw individual rewards
     for i, v in ipairs(self.rewards) do
         --draw name of reward
-        love.graphics.printf(v.name, self.rewards[i].xPos, 50+10, screenWidth*0.3, "center");
+        love.graphics.setColor(0,0,0,1);
+        love.graphics.printf(v.name, self.rewards[i].startingX, rewardTableY+10, partitionWidth, "center");
         --draw image of reward
         love.graphics.push();
+        local imageWidth = v.image:getWidth();
+        local imageHeight = v.image:getHeight();
         love.graphics.scale(scale);
-        love.graphics.draw(v.image, self.rewards[i].xPos/scale, (50+10+20)/scale);
+        love.graphics.setColor(1,1,1,1);
+        love.graphics.draw(v.image, (self.rewards[i].startingX+0.5*partitionWidth-0.5*imageWidth*scale)/scale, (rewardTableY+10+20)/scale);
         love.graphics.pop();
         --draw description of reward
-        --love.graphics.printf(v.description, self.rewards[i].xPos, 50+10+20+154+20, screenWidth*0.3, "center");
+        love.graphics.setColor(0,0,0,1);
+        love.graphics.printf(v.description, self.rewards[i].startingX, rewardTableY+10+imageHeight*scale+30, partitionWidth, "center");
         --draw choose button
-        love.graphics.setColor(225,198,153,1);
-        love.graphics.rectangle("fill", self.rewards[i].xPos+screenWidth*0.3*0.3, screenHeight*0.8-50, screenWidth*0.3*0.7, 50);
-        love.graphics.printf("Choose",self.rewards[i].xPos, screenHeight*0.8-50, screenWidth*0.3, "center");
+        love.graphics.setColor(love.math.colorFromBytes(225,198,153));
+        love.graphics.rectangle("fill", self.rewards[i].startingX+partitionWidth*0.3, rewardTableY+partitionHeight*0.8, partitionWidth*0.4, 50);
+        love.graphics.setColor(0,0,0);
+        love.graphics.printf("Choose",self.rewards[i].startingX, rewardTableY+partitionHeight*0.84, partitionWidth, "center");
         --add choose button locations into table
-        self.rewards[i].buttonPos = {x = self.rewards[i].xPos+screenWidth*0.3*0.3, y = screenHeight*0.8-50, w = screenWidth*0.3*0.7, h = 50};
+        self.rewards[i].buttonPos = {x = self.rewards[i].startingX+partitionWidth*0.3, y = rewardTableY+partitionHeight*0.8, w = partitionWidth*0.4, h = 50};
     end
     love.graphics.pop()
 end

@@ -5,6 +5,8 @@ local PlayerInput = require("Core.PlayerInput")
 local SceneList = require("Core.SceneList")
 local Reward = require("Core.Reward")
 
+local initialized = false;
+
 --POSITIONS--
 local ScreenWidth = love.graphics.getWidth()
 local ScreenHeight = love.graphics.getHeight()
@@ -30,7 +32,17 @@ player:placeInActiveSpellList(player.spells[3], 3);
 
 function love.load()
     Reward:init();
-    Reward:addReward(Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary));
+    local reward1=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
+    print(reward1.name)
+    Reward:addReward(reward1);
+    local reward2=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
+    print(reward2.name)
+    Reward:addReward(reward2);
+    local reward3=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
+    print(reward3.name)
+    Reward:addReward(reward3);
+
+    initialized = true;
 end
 
 function love.draw()
@@ -56,15 +68,26 @@ function love.update(dt)
 end
 
 function love.keypressed(key, scanCode, isRepeat)
+    if not initialized then
+        return;
+    end
     if scene == SceneList.fight then
         PlayerInput:fightSceneKeyCheck(key, scanCode, Board:getPlayer());
     end
 end
 
 function love.mousepressed(x,y,button,istouch,presses)
+    if not initialized then
+        return;
+    end
     if scene == SceneList.reward and button == 1 then
-        if Reward:chooseReward(PlayerInput:rewardGetMouseover(Reward.rewards),Board:getPlayer()) then
-            scene = SceneList.fight;
+        local chosenReward = PlayerInput:rewardGetMouseover(Reward.rewards)
+        if chosenReward then
+            print(chosenReward.name)
         end
+        --[[if Reward:chooseReward(chosenReward,Board:getPlayer()) then
+            
+            scene = SceneList.fight;
+        end]]
     end
 end

@@ -1,13 +1,13 @@
 SpellIdentifierList ={
-    ArcaneConversion = "ArcaneConversion",
+    ArcaneConversion = "Arcane Conversion",
     Cauterize = "Cauterize",
-    FeralLunge = "FeralLunge",
+    FeralLunge = "Feral Lunge",
     Heal = "Heal",
     Miracle = "Miracle",
     Regeneration = "Regeneration",
-    RewindFate = "RewindFate",
+    RewindFate = "Rewind Fate",
     Shatter = "Shatter",
-    PrayToDarkness = "PrayToDarkness",
+    PrayToDarkness = "Pray to Darkness",
 
     Rarity = {
         Common = "Common",
