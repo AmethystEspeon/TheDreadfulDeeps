@@ -80,6 +80,24 @@ function Board:getLowestHealthAliveEnemy()
     return lowestHealthEnemy;
 end
 
+function Board:getLowestHealthShieldAliveAlly()
+    local aliveAllies = {};
+    for i, v in ipairs(self.allies) do
+        if not v:isDead() then
+            table.insert(aliveAllies, v);
+        end
+    end
+    local lowestHealthShieldAlly = nil;
+    local lowestHealthShield = math.huge;
+    for i, v in ipairs(aliveAllies) do
+        if lowestHealthShield > v:getShield() + v:getHealth() then
+            lowestHealthShieldAlly = v;
+            lowestHealthShield = v:getShield() + v:getHealth();
+        end
+    end
+    return lowestHealthShieldAlly
+end
+
 function Board:getTankPreferredTarget()
     for i, v in ipairs(self.allies) do
         if v.isTank and not v:isDead() then
@@ -293,8 +311,8 @@ function Board:drawEnemies(centerX, centerY, scale)
     local scaledX = centerX/scale;
     local scaledY = centerY/scale;
     for i, v in ipairs(self.enemies) do
-        drawBar(v, scaledX, scaledY+((i-1)*self.EnemyBarWidth), self.EnemyBarWidth, self.EnemyBarHeight);
-        v.boardPosition = {x = centerX, y = centerY+((i-1)*self.EnemyBarWidth*scale), w = self.EnemyBarWidth*scale, h = self.EnemyBarHeight*scale};
+        drawBar(v, scaledX, scaledY+((i-1)*self.EnemyBarHeight), self.EnemyBarWidth, self.EnemyBarHeight);
+        v.boardPosition = {x = centerX, y = centerY+((i-1)*self.EnemyBarHeight*scale), w = self.EnemyBarWidth*scale, h = self.EnemyBarHeight*scale};
     end
     love.graphics.pop();
 end

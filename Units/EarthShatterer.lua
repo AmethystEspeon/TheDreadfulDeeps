@@ -27,6 +27,7 @@ function EarthShatterer:init()
     self.timeSinceLastMana = 0;
 
     self.name = UnitIdentifierList.EarthShatterer;
+    self.cost = 50;
 end
 
 function EarthShatterer:attack(dt)

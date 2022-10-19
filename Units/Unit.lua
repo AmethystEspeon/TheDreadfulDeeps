@@ -8,6 +8,36 @@ function Unit:init()
     self.buffs = {};
     self.debuffs = {};
 end
+---------------
+----SHIELDS----
+---------------
+function Unit:getShields()
+    if not self.Shields then
+        self.Shields = 0;
+    end
+    return self.Shields;
+end
+
+function Unit:addShields(amount)
+    if not self.Shields then
+        self.Shields = 0;
+    end
+    self.Shields = self.Shields + amount;
+    return;
+end
+
+function Unit:minusShields(amount)
+    if not self.Shields then
+        self.Shields = 0;
+    end
+    self.Shields = self.Shields - amount;
+    local shieldBreak = 0;
+    if self.Shields < 0 then
+        shieldBreak = math.abs(self.Shields);
+        self.Shields = 0;
+    end
+    return shieldBreak;
+end
 
 --------------
 ----HEALTH----
@@ -31,7 +61,7 @@ function Unit:addHealth(amount)
     assert(self.health);
     assert(self.maxHealth);
     if self.dead then
-        print("Cannot heal a dead unit from function Unit:addHealth");
+        print("Cannot heal a dead unit | function Unit:addHealth");
         return
     end
     self.health = self.health + amount;
@@ -45,6 +75,7 @@ function Unit:minusHealth(amount)
     if self.isDamageImmune then
         return --Don't take damage
     end
+    amount = self:minusShields(amount);
     self.health = self.health - amount;
     if self.health <= 0 then
         self.health = 0;

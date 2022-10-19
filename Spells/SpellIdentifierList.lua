@@ -8,6 +8,9 @@ SpellIdentifierList ={
     RewindFate = "Rewind Fate",
     Shatter = "Shatter",
     PrayToDarkness = "Pray to Darkness",
+    Atonement = "Atonement",
+    HeavyAttack = "Heavy Attack",
+    ScatterDisease = "Scatter Disease",
 
     Rarity = {
         Common = "Common",

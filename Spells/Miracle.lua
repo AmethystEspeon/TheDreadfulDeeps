@@ -27,6 +27,7 @@ function Miracle:init()
     self.castableOnSame = true;
     self.castableOnDead = true;
     self.castableOnMaxHealth = true;
+    self.castableWhileDead = true;
 
     self.description = "A legendary spell that brings an ally back from the dead, fully heals them, and prevents any damage dealth from any source for a short period of time." .. "\n\n" ..
         "MP Cost: " .. tostring(self.manaCost) ..

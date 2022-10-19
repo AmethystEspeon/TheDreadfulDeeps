@@ -1,28 +1,42 @@
-local SpellList = require("Spells.SpellList")
-local UnitList = require("Units.UnitList")
-local Board = require("Core.Board")
-local PlayerInput = require("Core.PlayerInput")
-local SceneList = require("Core.SceneList")
-local Reward = require("Core.Reward")
+local SpellList = require("Spells.SpellList");
+local UnitList = require("Units.UnitList");
+local Board = require("Core.Board");
+local PlayerInput = require("Core.PlayerInput");
+local SceneList = require("Core.SceneList");
+local Reward = require("Core.Reward");
+local UnitCardPool = require("Units.UnitCardPool");
 
 local initialized = false;
 
 --POSITIONS--
-local ScreenWidth = love.graphics.getWidth()
-local ScreenHeight = love.graphics.getHeight()
+local ScreenWidth = love.graphics.getWidth();
+local ScreenHeight = love.graphics.getHeight();
 local CenterX = (ScreenWidth-Board.AllyBarWidth)*0.5;
 local CenterY = (ScreenHeight-Board.AllyBarHeight)*0.5;
 local StartingEnemyBarX = CenterX+1.8*Board.EnemyBarWidth;
 local StartingEnemyBarY = love.graphics.getHeight()-(9)*(Board.EnemyBarHeight+3);
 
-local scene = SceneList.reward;
+local scene = SceneList.fight;
 
 local player = UnitList.Priest();
-local ally = UnitList.Sabertooth();
-local enemy = UnitList.EarthShatterer();
+local dps1 = UnitList.BasicDPS();
+local dps2 = UnitList.BasicDPS();
+local dps3 = UnitList.BasicDPS();
+local tank = UnitList.BasicTank()
+local enemy1 = UnitList.EarthShatterer();
+local enemy2 = UnitList.CrazedGhoul();
+local enemy3 = UnitList.CrazedGhoul();
+local enemy4 = UnitList.CrazedGhoul();
+
 Board:addAlly(player);
-Board:addAlly(ally);
-Board:addEnemy(enemy);
+Board:addAlly(dps1);
+Board:addAlly(dps2);
+Board:addAlly(dps3);
+Board:addAlly(tank);
+Board:addEnemy(enemy1);
+Board:addEnemy(enemy2);
+Board:addEnemy(enemy3);
+Board:addEnemy(enemy4);
  
 --Testing Spells Here-
 table.insert(player.spells, SpellList.Cauterize(player));
@@ -32,6 +46,7 @@ player:placeInActiveSpellList(player.spells[3], 3);
 
 function love.load()
     Reward:init();
+    UnitCardPool:init();
     local reward1=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
     print(reward1.name)
     Reward:addReward(reward1);

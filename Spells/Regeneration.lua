@@ -17,7 +17,7 @@ function Regeneration:init()
     self.image = ImageList.Regeneration;
     self.maxCooldown = .50;
     self.currentCooldown = 0;
-    self.manaCost = 20;
+    self.manaCost = 5;
 
     self.name = SpellIdentifierList.Regeneration;
     self.rarity = SpellIdentifierList.Rarity.Common;

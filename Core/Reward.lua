@@ -1,6 +1,8 @@
+--TODO: What happens when all cards are picked? (Can this even happen?)
+
 local SpellIdentifierList = require("Spells.SpellIdentifierList");
 local SpellList = require("Spells.SpellList");
-local CardPool = require("Spells.CardPool");
+local SpellCardPool = require("Spells.SpellCardPool");
 
 local Reward = {
     rarityChance = {
@@ -17,7 +19,7 @@ local Reward = {
 --Core Functions--
 ------------------
 function Reward:init()
-    CardPool:init();
+    SpellCardPool:init();
 end
 
 --Randomize the RNG
@@ -49,11 +51,11 @@ end
 
 function Reward:getRandomRarity(minimumRarity, maximumRarity)
     local chance = math.random(getRarityChance(minimumRarity, maximumRarity));
-    if chance <= Reward.rarityChance.common then
+    if chance <= Reward.rarityChance.common and SpellCardPool.Common.Cards ~= 0 then
         return SpellIdentifierList.Rarity.Common;
-    elseif chance <= Reward.rarityChance.common + Reward.rarityChance.rare then
+    elseif chance <= Reward.rarityChance.common + Reward.rarityChance.rare and SpellCardPool.Rare.Cards ~= 0 then
         return SpellIdentifierList.Rarity.Rare;
-    elseif chance <= Reward.rarityChance.common + Reward.rarityChance.rare + Reward.rarityChance.epic then
+    elseif chance <= Reward.rarityChance.common + Reward.rarityChance.rare + Reward.rarityChance.epic and SpellCardPool.Epic.Cards ~= 0 then
         return SpellIdentifierList.Rarity.Epic;
     else --if chance > all the others
         return SpellIdentifierList.Rarity.Legendary;
@@ -71,79 +73,72 @@ function Reward:clearRewards()
     self.rewards = {};
 end
 
+local function drawCard(randomCard, value)
+    if type(value) ~= "table" then
+        return randomCard, nil;
+    end
+    randomCard = randomCard - value.Cards;
+    if randomCard <= 0 then
+        value.inRewards = true;
+        return 0, value;
+    end
+    return randomCard, nil;
+end
+
 local function getCard(rarity, randomCard)
+    local pick;
     if rarity == SpellIdentifierList.Rarity.Common then
-        for k,v in pairs(CardPool.Common) do
-            if type(v) ~= "table" then
-                goto ENDCOMMON
+        for k,v in pairs(SpellCardPool.Common) do
+            randomCard, pick = drawCard(randomCard, v)
+            if pick then
+                return pick.Spell;
             end
-            randomCard = randomCard - v.Cards;
-            if randomCard <= 0 then
-                v.inRewards = true;
-                return v.Spell;
-            end
-            ::ENDCOMMON::
         end
     end
     if rarity == SpellIdentifierList.Rarity.Rare then
-        for k,v in pairs(CardPool.Rare) do
-            if type(v) ~= "table" then
-                goto ENDRARE
+        for k,v in pairs(SpellCardPool.Rare) do
+            randomCard, pick = drawCard(randomCard, v)
+            if pick then
+                return pick.Spell;
             end
-            randomCard = randomCard - v.Cards;
-            if randomCard <= 0 then
-                v.inRewards = true;
-                return v.Spell;
-            end
-            ::ENDRARE::
         end
     end
     if rarity == SpellIdentifierList.Rarity.Epic then
-        for k,v in pairs(CardPool.Epic) do
-            if type(v) ~= "table" then
-                goto ENDEPIC
+        for k,v in pairs(SpellCardPool.Epic) do
+            randomCard, pick = drawCard(randomCard, v)
+            if pick then
+                return pick.Spell;
             end
-            randomCard = randomCard - v.Cards;
-            if randomCard <= 0 then
-                v.inRewards = true;
-                return v.Spell;
-            end
-            ::ENDEPIC::
         end
     end
     if rarity == SpellIdentifierList.Rarity.Legendary then
-        for k,v in pairs(CardPool.Legendary) do
-            if type(v) ~= "table" then
-                goto ENDLEGENDARY
+        for k,v in pairs(SpellCardPool.Legendary) do
+            randomCard, pick = drawCard(randomCard, v)
+            if pick then
+                return pick.Spell;
             end
-            randomCard = randomCard - v.Cards;
-            if randomCard <= 0 then
-                v.inRewards = true;
-                return v.Spell;
-            end
-            ::ENDLEGENDARY::
         end
     end
 end
 
 --Check out weighted pool for another way
 function Reward:generateReward(minimumRarity, maximumRarity)
+    SpellCardPool:checkCardCount(false);
     local rarity = self:getRandomRarity(minimumRarity, maximumRarity);
     local cards = 0;
-    CardPool:checkCardCount(false);
     print(rarity)
     if rarity == SpellIdentifierList.Rarity.Common then
-        cards = CardPool.Common.Cards;
+        cards = SpellCardPool.Common.Cards;
     elseif rarity == SpellIdentifierList.Rarity.Rare then
-        cards = CardPool.Rare.Cards;
+        cards = SpellCardPool.Rare.Cards;
     elseif rarity == SpellIdentifierList.Rarity.Epic then
-        cards = CardPool.Epic.Cards;
+        cards = SpellCardPool.Epic.Cards;
     else --rarity == SpellIdentifierList.Rarity.Legendary then
-        cards = CardPool.Legendary.Cards;
+        cards = SpellCardPool.Legendary.Cards;
     end
     local randomCard = math.random(cards);
     local randomSpell = getCard(rarity, randomCard);
-    CardPool:setInRewards(randomSpell, true);
+    SpellCardPool:setInRewards(randomSpell, true);
     return randomSpell;
 end
 
@@ -158,7 +153,7 @@ function Reward:chooseReward(reward, player)
     end
     for i, v in pairs(self.rewards) do
         if v ~= reward then
-            CardPool:setInRewards(v, false);
+            SpellCardPool:setInRewards(v, false);
         end
     end
     Reward:clearRewards();
@@ -219,7 +214,7 @@ function Reward:drawReward(screenWidth, screenHeight)
         love.graphics.pop();
         --draw description of reward
         love.graphics.setColor(0,0,0,1);
-        love.graphics.printf(v.description, self.rewards[i].startingX, rewardTableY+10+imageHeight*scale+30, partitionWidth, "center");
+        love.graphics.printf(v.description, self.rewards[i].startingX+partitionWidth*0.1, rewardTableY+10+imageHeight*scale+30, partitionWidth*0.8, "center");
         --draw choose button
         love.graphics.setColor(love.math.colorFromBytes(225,198,153));
         love.graphics.rectangle("fill", self.rewards[i].startingX+partitionWidth*0.3, rewardTableY+partitionHeight*0.8, partitionWidth*0.4, 50);
