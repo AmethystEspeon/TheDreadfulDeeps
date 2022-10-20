@@ -2,6 +2,7 @@ local Create = require("Core.Create");
 local _, Spell = unpack(require("Spells.Spell"));
 local ImageList = require("Images.ImageList");
 local SpellIdentifierList = require("Spells.SpellIdentifierList");
+local Board = require("Core.Board");
 
 local Atonement = {};
 ------------
@@ -42,7 +43,7 @@ end
 
 function Atonement:cast(target)
     if not target then
-        print("No target selected");
+        --
         return;
     end
     assert(self.castingUnit);
@@ -50,9 +51,9 @@ function Atonement:cast(target)
         return;
     end
     target:minusHealth(self.damage);
-    local weakestAlly = self.castingUnit:getLowestHealthShieldAliveAlly();
+    local weakestAlly = Board:getLowestHealthShieldAliveAlly();
     if weakestAlly then
-        weakestAlly:addShield(self.damage/2);
+        weakestAlly:addShields(self.damage/2);
     end
     self.castingUnit:minusMana(self.manaCost);
     self.currentCooldown = self.maxCooldown;

@@ -61,7 +61,7 @@ function Unit:addHealth(amount)
     assert(self.health);
     assert(self.maxHealth);
     if self.dead then
-        print("Cannot heal a dead unit | function Unit:addHealth");
+        --print(" unit | function Unit:addHealth");
         return
     end
     self.health = self.health + amount;

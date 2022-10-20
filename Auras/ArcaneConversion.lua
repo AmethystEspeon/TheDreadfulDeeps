@@ -10,6 +10,7 @@ function ArcaneConversion:init()
     self.startingDuration = 10;
     self.currentDuration = 10;
     self.tickInterval = 0.1;
+    self.timeSinceLastTick = 0;
     self.healPerTick = 5;
 end
 

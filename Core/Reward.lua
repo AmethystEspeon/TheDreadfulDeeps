@@ -13,6 +13,7 @@ local Reward = {
         --50+30=80+15=95+5=100
     },
     rewards = {},
+    rewardChosen = false,
 }
 
 ------------------
@@ -66,7 +67,9 @@ end
 --CREATORS/REMOVERS--
 ---------------------
 function Reward:addReward(reward)
-    table.insert(self.rewards, reward);
+    if reward then
+        table.insert(self.rewards, reward);
+    end
 end
 
 function Reward:clearRewards()
@@ -123,10 +126,10 @@ end
 
 --Check out weighted pool for another way
 function Reward:generateReward(minimumRarity, maximumRarity)
-    SpellCardPool:checkCardCount(false);
+    SpellCardPool:checkCardCount(true);
     local rarity = self:getRandomRarity(minimumRarity, maximumRarity);
     local cards = 0;
-    print(rarity)
+    --print(rarity)
     if rarity == SpellIdentifierList.Rarity.Common then
         cards = SpellCardPool.Common.Cards;
     elseif rarity == SpellIdentifierList.Rarity.Rare then
@@ -157,7 +160,6 @@ function Reward:chooseReward(reward, player)
         end
     end
     Reward:clearRewards();
-
     return true;
 end
 

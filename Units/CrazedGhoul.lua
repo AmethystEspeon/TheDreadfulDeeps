@@ -17,7 +17,7 @@ function CrazedGhoul:init()
     self.maxMana = 18;
     self.health = self.maxHealth;
     self.mana = 0;
-    self.attackDamage = 125;
+    self.attackDamage = 80;
     self.attackInterval = 0.8;
     self.timeSinceLastAttack = 0;
 
@@ -27,6 +27,7 @@ function CrazedGhoul:init()
 
     self.name = UnitIdentifierList.CrazedGhoul;
     self.cost = 15;
+    self.duplicatesAllowed = 3;
 end
 
 function CrazedGhoul:attack(dt)

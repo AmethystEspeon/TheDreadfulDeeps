@@ -13,21 +13,28 @@ function UnitCardPool:init()
     };
     for k,v in pairs(UnitList) do
         local unit = v();
-        print(unit.name);
         local function putUnitInTable()
             if unit.isHealer then
                 return;
             end
             if unit.isAlly then
-                self.Ally[unit.name] = {Cards = 1, Unit = unit, inBattle = false};
+                self.Ally[unit.name] = {Cards = 1, Unit = unit, inBattleCount = 0};
                 self.Ally.Cards = self.Ally.Cards + 1;
             end
             if unit.isEnemy then
-                self.Enemy[unit.name] = {Cards = 1, Unit = unit, inBattle = false};
+                self.Enemy[unit.name] = {Cards = 1, Unit = unit, inBattleCount = 0};
                 self.Enemy.Cards = self.Enemy.Cards + 1;
             end
         end
         putUnitInTable();
+    end
+end
+
+function UnitCardPool:resetEnemyPool()
+    for k,v in pairs(self.Enemy) do
+        if type(v) == "table" then
+            v.inBattleCount = 0;
+        end
     end
 end
 

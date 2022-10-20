@@ -36,6 +36,10 @@ function PlayerInput:fightSceneKeyCheck(key, scanCode, playerUnit)
         playerUnit:castSpellInSlot(mouseoverUnit, 3);
     elseif key == "r" or key == "R" then
         playerUnit:castSpellInSlot(mouseoverUnit, 4);
+    elseif key == "t" or key == "T" then
+        playerUnit:castSpellInSlot(mouseoverUnit, 5);
+    elseif key == "y" or key == "Y" then
+        playerUnit:castSpellInSlot(mouseoverUnit, 6);
     end
 end
 

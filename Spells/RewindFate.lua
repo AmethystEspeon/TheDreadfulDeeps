@@ -47,11 +47,11 @@ end
 
 function RewindFate:cast(target)
     if not target then
-        print("No target selected");
         return;
     end
     assert(self.castingUnit);
     if not self:isCastable(target) then
+        print("rewind not cast")
         return;
     end
     target:addBuff(CreateRewindFateBuff(target));

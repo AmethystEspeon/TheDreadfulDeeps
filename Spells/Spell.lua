@@ -4,6 +4,7 @@ Spell = {};
 
 function Spell:init()
     self.description = "test"
+    self.spell = true;
 end
 
 function Spell:drawCooldown(x, y, scale)
@@ -43,6 +44,7 @@ end
 function Spell:isCastable(target)
     if self.castingUnit.isHealer then
         if self.castingUnit.mana < self.manaCost then
+            print("Cannot cast without enough Mana")
             return false;
         end
     end

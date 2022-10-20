@@ -44,7 +44,7 @@ end
 
 function ArcaneConversion:cast(target)
     if not target then
-        print("No target selected");
+        --
         return;
     end
     assert(self.castingUnit);

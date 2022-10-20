@@ -34,7 +34,24 @@ function Player:placeInActiveSpellList(spell, placement)
         end
     end
     spell.activeSlot = placement
+    --print("Placed " .. spell.name .. " in slot " .. spell.activeSlot);
     setActiveSpellList(self)
+end
+
+function Player:placeInNextActiveSpellListSlot(spell)
+    for i = 1, 6 do
+        local slotTaken = false;
+        for j, k in ipairs(self.spells) do
+            if k.activeSlot == i then
+                slotTaken = true;
+            end
+        end
+        --print("Checking " .. tostring(i))
+        if not slotTaken then
+            self:placeInActiveSpellList(spell, i);
+            return;
+        end
+    end
 end
 
 function Player:castSpellInSlot(target, number)
@@ -43,7 +60,7 @@ function Player:castSpellInSlot(target, number)
             if k.currentCooldown <= 0 then
                 k:cast(target);
             else
-                print("Still on cooldown")
+                --print("Still on cooldown")
             end
             return
         end

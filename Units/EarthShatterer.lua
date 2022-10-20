@@ -18,7 +18,7 @@ function EarthShatterer:init()
     self.maxMana = 20;
     self.health = self.maxHealth;
     self.mana = 0;
-    self.attackDamage = 300;
+    self.attackDamage = 500;
     self.attackInterval = 1;
     self.timeSinceLastAttack = 0;
 

@@ -9,6 +9,11 @@ ImageList = {
     Sabertooth = love.graphics.newImage("Images/Regeneration.png"),
     PrayToDarkness = love.graphics.newImage("Images/Regeneration.png"),
     RewindFate = love.graphics.newImage("Images/Regeneration.png"),
+    Atonement = love.graphics.newImage("Images/Regeneration.png"),
+    DivineIntervention = love.graphics.newImage("Images/Regeneration.png"),
+    HeavyAttack = love.graphics.newImage("Images/Regeneration.png"),
+    ScatterDisease = love.graphics.newImage("Images/Regeneration.png"),
+    
 
 }
 

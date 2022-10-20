@@ -90,9 +90,9 @@ function Board:getLowestHealthShieldAliveAlly()
     local lowestHealthShieldAlly = nil;
     local lowestHealthShield = math.huge;
     for i, v in ipairs(aliveAllies) do
-        if lowestHealthShield > v:getShield() + v:getHealth() then
+        if lowestHealthShield > v:getShields() + v:getHealth() then
             lowestHealthShieldAlly = v;
-            lowestHealthShield = v:getShield() + v:getHealth();
+            lowestHealthShield = v:getShields() + v:getHealth();
         end
     end
     return lowestHealthShieldAlly
@@ -135,6 +135,26 @@ function Board:getPlayer()
             return v;
         end
     end
+end
+
+function Board:getNumberAliveEnemies()
+    local aliveCount = 0;
+    for i, v in ipairs(self.enemies) do
+         if not v:isDead() then
+            aliveCount = aliveCount + 1;
+         end
+    end
+    return aliveCount;
+end
+
+function Board:getNumberAliveAllies()
+    local aliveCount = 0;
+    for i, v in ipairs(self.allies) do
+         if not v:isDead() then
+            aliveCount = aliveCount + 1;
+         end
+    end
+    return aliveCount;
 end
 ----------------------
 --BOARDWIDE FUNTIONS--
@@ -236,13 +256,22 @@ function Board:reapBuffs()
     end
 end
 
-function Board:reset() --TODO: Is this necessary? would self = {} work?
-    for k,v in pairs(self.allies) do
-        self.allies[k] = nil;
-    end
+ --TODO: Is this necessary? would self = {} work?
+function Board:resetEnemyBoard()
     for k,v in pairs(self.enemies) do
         self.enemies[k] = nil;
     end
+end
+
+function Board:resetAllyBoard()
+    for k,v in pairs(self.allies) do
+        self.allies[k] = nil;
+    end
+end
+
+function Board:reset()
+    self:resetEnemyBoard();
+    self:resetAllyBoard();
 end
 -----------------
 --BAR FUNCTIONS--
@@ -311,7 +340,7 @@ function Board:drawEnemies(centerX, centerY, scale)
     local scaledX = centerX/scale;
     local scaledY = centerY/scale;
     for i, v in ipairs(self.enemies) do
-        drawBar(v, scaledX, scaledY+((i-1)*self.EnemyBarHeight), self.EnemyBarWidth, self.EnemyBarHeight);
+        drawBar(v, scaledX, scaledY+((i-1)*(self.EnemyBarHeight+self.EnemyBarHeight/4)), self.EnemyBarWidth, self.EnemyBarHeight);
         v.boardPosition = {x = centerX, y = centerY+((i-1)*self.EnemyBarHeight*scale), w = self.EnemyBarWidth*scale, h = self.EnemyBarHeight*scale};
     end
     love.graphics.pop();

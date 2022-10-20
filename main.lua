@@ -5,6 +5,7 @@ local PlayerInput = require("Core.PlayerInput");
 local SceneList = require("Core.SceneList");
 local Reward = require("Core.Reward");
 local UnitCardPool = require("Units.UnitCardPool");
+local EnemyDirector = require("Directors.EnemyDirector");
 
 local initialized = false;
 
@@ -23,40 +24,61 @@ local dps1 = UnitList.BasicDPS();
 local dps2 = UnitList.BasicDPS();
 local dps3 = UnitList.BasicDPS();
 local tank = UnitList.BasicTank()
-local enemy1 = UnitList.EarthShatterer();
-local enemy2 = UnitList.CrazedGhoul();
-local enemy3 = UnitList.CrazedGhoul();
-local enemy4 = UnitList.CrazedGhoul();
 
 Board:addAlly(player);
 Board:addAlly(dps1);
 Board:addAlly(dps2);
 Board:addAlly(dps3);
 Board:addAlly(tank);
-Board:addEnemy(enemy1);
-Board:addEnemy(enemy2);
-Board:addEnemy(enemy3);
-Board:addEnemy(enemy4);
- 
+
 --Testing Spells Here-
-table.insert(player.spells, SpellList.Cauterize(player));
+table.insert(player.spells, SpellList.RewindFate(player));
 table.insert(player.spells, SpellList.Regeneration(player));
 player:placeInActiveSpellList(player.spells[2], 2);
-player:placeInActiveSpellList(player.spells[3], 3);
+player:placeInActiveSpellList(player.spells[3], 4);
 
+-------------------
+--LOCAL FUNCTIONS--
+-------------------
+local function changeSceneFromFight()
+    if Board:getNumberAliveAllies() == 0 then
+        scene = SceneList.gameOver;
+    elseif Board:getNumberAliveEnemies() == 0 then
+        local currentTokens = EnemyDirector:getTokens();
+        EnemyDirector:addTokens(currentTokens*0.1);
+        
+        --TODO: USE REWARD DIRECTOR
+        local reward1=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
+        --print(reward1.name)
+        Reward:addReward(reward1);
+        local reward2=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
+        --print(reward2.name)
+        Reward:addReward(reward2);
+        local reward3=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
+        --print(reward3.name)
+        Reward:addReward(reward3);
+
+        scene = SceneList.reward;
+    end
+end
+
+local function changeSceneFromReward(reward)
+    if reward then
+        player:placeInNextActiveSpellListSlot(reward);
+    end
+    Board:resetEnemyBoard();
+    UnitCardPool:resetEnemyPool();
+    EnemyDirector:fillBoard();
+end
+------------------
+--LOVE FUNCTIONS--
+------------------
 function love.load()
     Reward:init();
     UnitCardPool:init();
-    local reward1=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
-    print(reward1.name)
-    Reward:addReward(reward1);
-    local reward2=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
-    print(reward2.name)
-    Reward:addReward(reward2);
-    local reward3=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
-    print(reward3.name)
-    Reward:addReward(reward3);
-
+    EnemyDirector:init();
+    --TODO: REPLACE THIS
+    EnemyDirector:fillBoard();
     initialized = true;
 end
 
@@ -73,12 +95,17 @@ end
 
 function love.update(dt)
     if scene == SceneList.fight then
+        changeSceneFromFight();
         Board:useAttacks(dt);
         Board:useAbilities(dt);
         Board:useManaGain(dt);
         Board:useAurasTick(dt);
         Board:tickAllCooldowns(dt);
         Board:reapBuffs();
+    end
+    if scene == SceneList.reward and #Reward.rewards == 0 then
+        changeSceneFromReward();
+        scene = SceneList.fight;
     end
 end
 
@@ -97,12 +124,9 @@ function love.mousepressed(x,y,button,istouch,presses)
     end
     if scene == SceneList.reward and button == 1 then
         local chosenReward = PlayerInput:rewardGetMouseover(Reward.rewards)
-        if chosenReward then
-            print(chosenReward.name)
-        end
-        --[[if Reward:chooseReward(chosenReward,Board:getPlayer()) then
-            
+        if Reward:chooseReward(chosenReward,Board:getPlayer()) then
+            changeSceneFromReward(chosenReward);
             scene = SceneList.fight;
-        end]]
+        end
     end
 end
