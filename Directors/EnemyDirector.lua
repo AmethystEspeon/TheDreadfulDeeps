@@ -40,7 +40,7 @@ function EnemyDirector:generateEnemy(currentTokens)
     for k,v in pairs(UnitCardPool.Enemy) do
         if type(v) == "table" then
             placeUnit(v, possibleEnemies, currentTokens);
-            print("Placed unit: " .. v.Unit.name);
+            --print("Placed unit: " .. v.Unit.name);
         end
     end
     if #possibleEnemies == 0 then
@@ -105,9 +105,6 @@ function EnemyDirector:fillBoard()
     local tokensLeft = true;
     while tokensLeft do
         local enemy = self:generateEnemy(currentTokens);
-        if enemy then
-            print(enemy.name)
-        end
         if enemy == nil then
             tokensLeft = false;
         else
@@ -116,7 +113,7 @@ function EnemyDirector:fillBoard()
             Board:addEnemy(unit);
             currentTokens = currentTokens - unit.cost;
         end
-        print("Current Tokens: " .. currentTokens);
+        --print("Current Tokens: " .. currentTokens);
     end
 end
 

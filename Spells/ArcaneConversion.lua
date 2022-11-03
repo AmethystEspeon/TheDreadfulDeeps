@@ -25,6 +25,53 @@ function ArcaneConversion:init()
         "\nDuration: " .. tostring(descBuff.startingDuration) .. "s" ..
         "\nHeal = " ..tostring(descBuff.healPerTick/descBuff.tickInterval) .. "/s" .. "\nAdditional Heal per Debuff: " ..tostring(descBuff.healPerTick/descBuff.tickInterval) ..
         "/s";
+
+    self:addUpgrades();
+end
+
+function ArcaneConversion:addUpgrades()
+    local function updateDescription()
+        self.description = "Dispels all debuffs from an ally and converts them into a heal over time that grows in strength per debuff dispelled." .. "\n\n" ..
+        "MP Cost: " .. tostring(self.manaCost) ..
+        "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
+        "\nDuration: " .. tostring(descBuff.startingDuration) .. "s" ..
+        "\nHeal = " ..tostring(descBuff.healPerTick/descBuff.tickInterval) .. "/s" .. "\nAdditional Heal per Debuff: " ..tostring(descBuff.healPerTick/descBuff.tickInterval) ..
+        "/s";
+        if self.upgrades[1].applied then
+            self.description = self.description .. "\n\n" .. self.upgrades[1].description;
+        end
+        if self.upgrades[2].applied then
+            self.description = self.description .. "\n\n" .. self.upgrades[2].description;
+        end
+    end
+    self.upgrades = self.upgrades or {};
+    self.upgrades[1] = {
+        upgrade = true;
+        inRewards = false;
+        name = SpellIdentifierList.ArcaneConversion .. ": " .. SpellIdentifierList.Upgrades.Cooldown;
+        image = self.image;
+        description = "Every debuff dispelled reduces the cooldown by 5s";
+
+        applied = false;
+        choose = function()
+            self.upgrades[1].applied = true;
+            updateDescription();
+        end
+    }
+
+    self.upgrades[2] = {
+        upgrade = true;
+        inRewards = false;
+        name = SpellIdentifierList.ArcaneConversion .. ": " .. SpellIdentifierList.Upgrades.ManaCost;
+        image = self.image;
+        description = "Every debuff dispelled refunds 20% of the mana cost";
+
+        applied = false;
+        choose = function()
+            self.upgrades[2].applied = true;
+            updateDescription();
+        end
+    }
 end
 
 function ArcaneConversion:getCardCount(preventDupes)
@@ -58,9 +105,19 @@ function ArcaneConversion:cast(target)
             numDebuffRemoved = numDebuffRemoved + 1;
         end
     end
-    target:addBuff(CreateArcaneConversionBuff(target, numDebuffRemoved));
+    local buff = CreateArcaneConversionBuff(self.castingUnit, numDebuffRemoved);
+    target:addBuff(buff);
     self.castingUnit:minusMana(self.manaCost);
+    if self.upgrades[2].applied then
+        self.castingUnit:addMana(self.manaCost * 0.2 * numDebuffRemoved);
+    end
     self.currentCooldown = self.maxCooldown;
+    if self.upgrades[1].applied then
+        self.currentCooldown = self.currentCooldown - numDebuffRemoved*5;
+        if self.currentCooldown < 0 then
+            self.currentCooldown = 0;
+        end
+    end
 end
 
 function CreateArcaneConversion(caster)

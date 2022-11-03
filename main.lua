@@ -17,7 +17,7 @@ local CenterY = (ScreenHeight-Board.AllyBarHeight)*0.5;
 local StartingEnemyBarX = CenterX+1.8*Board.EnemyBarWidth;
 local StartingEnemyBarY = love.graphics.getHeight()-(9)*(Board.EnemyBarHeight+3);
 
-local scene = SceneList.fight;
+local scene = SceneList.reward;
 
 local player = UnitList.Priest();
 local dps1 = UnitList.BasicDPS();
@@ -32,10 +32,8 @@ Board:addAlly(dps3);
 Board:addAlly(tank);
 
 --Testing Spells Here-
-table.insert(player.spells, SpellList.RewindFate(player));
 table.insert(player.spells, SpellList.Regeneration(player));
 player:placeInActiveSpellList(player.spells[2], 2);
-player:placeInActiveSpellList(player.spells[3], 4);
 
 -------------------
 --LOCAL FUNCTIONS--
@@ -48,13 +46,13 @@ local function changeSceneFromFight()
         EnemyDirector:addTokens(currentTokens*0.1);
         
         --TODO: USE REWARD DIRECTOR
-        local reward1=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
+        local reward1=Reward:generateSpellReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
         --print(reward1.name)
         Reward:addReward(reward1);
-        local reward2=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
+        local reward2=Reward:generateSpellReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
         --print(reward2.name)
         Reward:addReward(reward2);
-        local reward3=Reward:generateReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
+        local reward3=Reward:generateSpellReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
         --print(reward3.name)
         Reward:addReward(reward3);
 
@@ -66,6 +64,7 @@ local function changeSceneFromReward(reward)
     if reward then
         player:placeInNextActiveSpellListSlot(reward);
     end
+    Board:healAfterFight(.20)
     Board:resetEnemyBoard();
     UnitCardPool:resetEnemyPool();
     EnemyDirector:fillBoard();
@@ -80,6 +79,17 @@ function love.load()
     --TODO: REPLACE THIS
     EnemyDirector:fillBoard();
     initialized = true;
+
+
+    local reward1=Reward:generateSpellReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
+    --print(reward1.name)
+    Reward:addReward(reward1);
+    local reward2=Reward:generateSpellReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
+    --print(reward2.name)
+    Reward:addReward(reward2);
+    local reward3=Reward:generateSpellReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
+    --print(reward3.name)
+    Reward:addReward(reward3);
 end
 
 function love.draw()
@@ -89,7 +99,7 @@ function love.draw()
         Board:drawSpells(100, 500, 0.15);
     end
     if scene == SceneList.reward then
-        Reward:drawReward(ScreenWidth,ScreenHeight)
+        Reward:drawReward()
     end
 end
 
@@ -103,7 +113,7 @@ function love.update(dt)
         Board:tickAllCooldowns(dt);
         Board:reapBuffs();
     end
-    if scene == SceneList.reward and #Reward.rewards == 0 then
+    if scene == SceneList.reward and #Reward.rewards.children == 0 then
         changeSceneFromReward();
         scene = SceneList.fight;
     end
@@ -123,10 +133,19 @@ function love.mousepressed(x,y,button,istouch,presses)
         return;
     end
     if scene == SceneList.reward and button == 1 then
-        local chosenReward = PlayerInput:rewardGetMouseover(Reward.rewards)
-        if Reward:chooseReward(chosenReward,Board:getPlayer()) then
-            changeSceneFromReward(chosenReward);
-            scene = SceneList.fight;
+        PlayerInput:rewardMousePressed(x,y);
+    end
+end
+
+function love.mousereleased(x,y,button,istouch,presses)
+    if not initialized then
+        return;
+    end
+    if scene == SceneList.reward and button == 1 then
+        local reward = PlayerInput:rewardMouseReleased(x,y);
+        if reward then
+            Reward:chooseReward(reward, player);
+            player:placeInNextActiveSpellListSlot(reward);
         end
     end
 end

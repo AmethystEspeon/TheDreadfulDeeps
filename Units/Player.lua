@@ -57,6 +57,7 @@ end
 function Player:castSpellInSlot(target, number)
     for i, k in ipairs(self.activeSpellList) do
         if k.activeSlot == number then
+            k.timeSincePressed = 0;
             if k.currentCooldown <= 0 then
                 k:cast(target);
             else
@@ -67,6 +68,21 @@ function Player:castSpellInSlot(target, number)
     end
 end
 
+-----------------
+--SPELL REWARDS--
+-----------------
+function Player:getSpellUpgrades()
+    local spellUpgrades = {};
+    for i, k in ipairs(self.spells) do
+        for j, l in ipairs(k.upgrades) do
+            if not l.applied and  not l.inRewards then
+                table.insert(spellUpgrades, l);
+            end
+        end
+    end
+end
+
+-----------------
 function CreatePlayer()
     return Create(Unit, Ally, Player)
 end

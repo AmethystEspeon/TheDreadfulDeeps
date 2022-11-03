@@ -62,18 +62,27 @@ end
 
 
 local function checkIfInRewards(searchSpell, bool, rarity)
+    if not searchSpell then
+        return;
+    end
+    if type(rarity) ~= "table" then
+        return;
+    end
     if not rarity.Cards then
         return;
     end
-    for spell in pairs(rarity) do
-        if spell.Spell and spell.Spell.name == searchSpell.name then
-            spell.inRewards = bool;
+    for i, spell in pairs(rarity) do
+        if type(spell) == "table" then
+            if spell.Spell and spell.Spell.name == searchSpell.name then
+                spell.inRewards = bool;
+                print(spell.Spell.name, spell.inRewards)
+            end
         end
     end
 end
 
-function SpellCardPool:setInRewards(searchSpell, bool)
-    for rarity in pairs(SpellCardPool) do
+function SpellCardPool:setSpellInRewards(searchSpell, bool)
+    for i, rarity in pairs(SpellCardPool) do
         checkIfInRewards(searchSpell, bool, rarity);
     end
 end

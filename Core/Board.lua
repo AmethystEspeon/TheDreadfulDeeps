@@ -201,11 +201,13 @@ end
 function Board:tickAllCooldowns(dt)
     for i,v in ipairs(self.allies) do
         for j, w in ipairs(v.spells) do
+            w:tickPressed(dt);
             w:tickCooldown(dt);
         end
     end
     for i,v in ipairs(self.enemies) do
         for j, w in ipairs(v.spells) do
+            w:tickPressed(dt);
             w:tickCooldown(dt);
         end
     end
@@ -253,6 +255,15 @@ function Board:reapBuffs()
                 table.remove(v.buffs, j);
             end
         end
+    end
+end
+
+function Board:healAfterFight(percentage)
+    for i,v in ipairs(self.allies) do
+        if v:isDead() then
+            v.dead = false;
+        end
+        v:addHealth(v:getMaxHealth() * percentage);
     end
 end
 

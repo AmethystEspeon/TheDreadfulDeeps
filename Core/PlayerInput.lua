@@ -1,5 +1,6 @@
 local Board = require("Core.Board");
 local Reward = require("Core.Reward")
+local Table = require("Core.TableFuncs");
 
 local PlayerInput = {};
 
@@ -17,10 +18,25 @@ function PlayerInput:fightGetMouseover(enemies, allies)
     end
 end
 
-function PlayerInput:rewardGetMouseover(rewards)
-    local x, y = love.mouse.getPosition();
-    for i, reward in ipairs(rewards) do
-        if x > reward.buttonPos.x and x < reward.buttonPos.x + reward.buttonPos.w and y > reward.buttonPos.y and y < reward.buttonPos.y + reward.buttonPos.h then
+function PlayerInput:rewardMousePressed(x,y)
+    local allButtons = Reward:getRewardButtons();
+    if not allButtons then
+        return;
+    end
+    for i,v in ipairs(allButtons) do
+        v:onPress(x,y);
+    end
+end
+
+function PlayerInput:rewardMouseReleased(x,y)
+    local reward;
+    local allButtons = Reward:getRewardButtons();
+    if not allButtons then
+        return;
+    end
+    for i,v in ipairs(allButtons) do
+        reward = v:onRelease(x,y);
+        if reward then
             return reward;
         end
     end
