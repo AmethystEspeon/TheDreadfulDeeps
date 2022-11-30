@@ -12,6 +12,7 @@ function SpellFrame:drawCooldown()
     assert(self.spell, "SpellFrame: " .. self.name .. " has no spell");
     assert(self.spell.image, "SpellFrame: " .. "Spell " .. self.spell.name .. " in SpellFrame: " .. self.name .. " has no image");
     assert(self.texture, "SpellFrame: " .. self.name .. " has no texture");
+    self:drawTexture();
     love.graphics.push();
     love.graphics.scale(self.scale);
 
@@ -20,11 +21,21 @@ function SpellFrame:drawCooldown()
         percent = 1;
     end
 
+    
+    local scaledX = self.x / self.scale;
+    local scaledY = self.y / self.scale;
+
+    ------------------------
+    --PRESSED NOTIFICATION--
+    ------------------------
+    local scaledPressedX = self.x / self.scale + self.texture:getWidth()*0.075;
+    local scaledPressedY = self.y / self.scale + self.texture:getHeight()*0.075;
+    local pressedW = self.w * 0.85;
+    local pressedH = self.h * 0.85;
     love.graphics.setColor(1,1,1,1);
-    self:drawTexture();
     if self.spell.timeSincePressed < 0.15 then
         local function pressedStencil()
-            love.graphics.rectangle("fill",self.x+self.texture:getWidth()*0.075,self.y+self.texture:getHeight()*0.075,self.texture:getWidth()*0.85,self.texture:getHeight()*0.85);
+            love.graphics.rectangle("fill", scaledPressedX, scaledPressedY, pressedW, pressedH);
         end
         love.graphics.stencil(pressedStencil, "replace", 1);
         love.graphics.setStencilTest("equal", 0);
@@ -33,29 +44,46 @@ function SpellFrame:drawCooldown()
         else
             love.graphics.setColor(1,0.1,0.1,0.8);
         end
-        love.graphics.rectangle("fill",self.x,self.y,self.texture:getWidth(),self.texture:getHeight());
+        love.graphics.rectangle("fill", scaledX, scaledY, self.w, self.h);
         love.graphics.setStencilTest();
     end
-    local function stencilFunction()
-        love.graphics.rectangle("fill",self.x,self.y,self.texture:getWidth(),self.texture:getHeight());
+
+    ------------
+    --COOLDOWN--
+    ------------
+    local function fullStencil()
+        love.graphics.rectangle("fill",scaledX, scaledY, self.texture:getWidth(), self.texture:getHeight());
     end
-    love.graphics.stencil(stencilFunction, "replace", 1);
+    love.graphics.stencil(fullStencil, "replace", 1);
     love.graphics.setStencilTest("greater", 0);
-    love.graphics.setColor(0.2,0.2,0.2,.7);
-    love.graphics.arc("fill", self.x+1/2*self.texture:getWidth(), self.y+1/2*self.texture:getHeight(), self.texture:getWidth()*1.5, -math.pi*2*percent-1/2*math.pi,-1/2*math.pi);
-    if self.spell.caster.mana < self.spell.manaCost then
-        love.graphics.setColor(1,0.1,0.1,0.2);
-        love.graphics.rectangle("fill",self.x,self.y,self.texture:getWidth(),self.texture:getHeight());
-    end
+    love.graphics.setColor(0.2,0.2,0.2,0.7);
+    love.graphics.arc("fill", scaledX+1/2*self.texture:getWidth(), scaledY+1/2*self.texture:getHeight(), 500*1.5, -math.pi*2*percent-1/2*math.pi, -1/2*math.pi);
     love.graphics.setStencilTest();
-    
 
     love.graphics.pop();
 end
 
+function SpellFrame:drawAllCooldowns()
+    if self.spell then
+        self:drawCooldown();
+    end
+    for _, child in pairs(self.children) do
+        if child.drawAllCooldowns then
+            child:drawAllCooldowns();
+        end
+    end
+end
+
 function SpellFrame:setSpell(spell)
+    if spell == nil then
+        self.spell = nil;
+        self.texture = nil;
+        return;
+    end
     self.spell = spell;
     self.texture = spell.image;
+    self.w = self.texture:getWidth() * self.scale;
+    self.h = self.texture:getHeight() * self.scale;
 end
 
 function SpellFrame:applySpellSettings(settings)

@@ -20,7 +20,7 @@ function HealthFrame:setUnit(unit)
     self.unit = unit;
 end
 
-function HealthFrame:drawHealth()
+function HealthFrame:draw()
     assert(self.unit, "HealthFrame: " .. self.name .. " has no unit");
     love.graphics.push();
     if self.unit:isDead() then

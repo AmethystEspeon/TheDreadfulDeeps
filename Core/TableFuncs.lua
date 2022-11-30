@@ -7,4 +7,11 @@ function Table:addTable(new, old)
     end
 end
 
+function Table:checkIfTable(valueToCheck)
+    if type(valueToCheck) == "table" then
+        return true;
+    end
+    return false;
+end
+
 return Table;

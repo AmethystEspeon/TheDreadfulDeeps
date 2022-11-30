@@ -20,7 +20,7 @@ function ManaFrame:setUnit(unit)
     self.unit = unit;
 end
 
-function ManaFrame:drawMana()
+function ManaFrame:draw()
     assert(self.unit, "ManaFrame: " .. self.name .. " has no unit");
     if not self.unit.maxMana or self.unit.maxMana == 0 then
         return;
@@ -38,6 +38,7 @@ function ManaFrame:drawMana()
         love.graphics.setColor(0,0,1);
         love.graphics.rectangle("fill", self.x+1, self.y+1, (self.w-2) * (self.unit.mana/self.unit.maxMana), self.h-2);
     end
+    love.graphics.pop();
 end
 
 function CreateManaFrame(settings)

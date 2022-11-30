@@ -49,6 +49,14 @@ function Frame:applyFrameSettings(settings)
 end
 
 function Frame:updatePosition()
+    if not self.parent then
+        if self.offsetX then
+            self.x = self.x + self.offsetX;
+        end
+        if self.offsetY then
+            self.y = self.y + self.offsetY;
+        end
+    end
     if self.parent then
         self.x = self.parent.x + self.offsetX;
         self.y = self.parent.y + self.offsetY;
@@ -73,6 +81,13 @@ function Frame:translate(x, y)
     for _, child in ipairs(self.children) do
         child:updatePosition();
     end
+end
+
+function Frame:mouseHoveringFrame(x, y)
+    if x >= self.x and x <= self.x + self.w and y >= self.y and y <= self.y + self.h then
+        return true;
+    end
+    return false;
 end
 
 function Frame:drawAll()

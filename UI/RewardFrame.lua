@@ -74,20 +74,25 @@ function RewardFrame:applyRewardSettings(settings)
     self.buttonFrame = ButtonFrame(buttonSettings);
     if settings.buttonPressedColor then
         self.buttonFrame:setOnPress(function(_, x, y)
-            if self.buttonFrame:mouseHoveringButton(x,y) then
+            if self.buttonFrame:mouseHoveringFrame(x,y) then
                 self.buttonFrame.backgroundFrame:setColor(settings.buttonPressedColor)
+                self.buttonFrame.pressed = true;
             end
         end);
         self.buttonFrame:setOnRelease(function(_, x, y)
             self.buttonFrame.backgroundFrame:setColor(buttonSettings.backgroundColor)
-            if self.buttonFrame:mouseHoveringButton(x, y) then
+            if self.buttonFrame:mouseHoveringFrame(x, y) then
                 print("Reward: " .. self.reward.name)
-                return self.reward;
+                if self.buttonFrame.pressed then
+                    self.buttonFrame.pressed = false;
+                    return self.reward;
+                end
+                self.buttonFrame.pressed = false;
             end
         end);
     else
         self.buttonFrame:setOnRelease(function(_, x, y)
-            if self.buttonFrame:mouseHoveringButton(x, y) then
+            if self.buttonFrame:mouseHoveringFrame(x, y) then
                 print("Reward: " .. self.reward.name)
                 return self.reward;
             end

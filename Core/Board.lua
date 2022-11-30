@@ -1,22 +1,129 @@
 local Create = require("Core.Create");
+local UIList = require("UI.UIList");
+
+local initialized = false;
 
 local AliveBackgroundColor = {1,1,1}
 local DeadBackgroundColor = {0.6,0.6,0.6}
 
 local Board = {
     allies = {},
+    allyFrames = {},
     enemies = {},
+    enemyFrames = {},
     AllyBarWidth = 150,
     AllyBarHeight = 60,
     EnemyBarWidth = 150,
     EnemyBarHeight = 60,
 };
 
+local separation = 10;
+local XAlliesStart = love.graphics.getWidth()/2-2.5*Board.AllyBarWidth-2*separation;
+local YAlliesStart = love.graphics.getHeight()*2/3;
+
+local function createEnemyFrameSingle(enemy)
+    local enemyFrameSettings = {}
+    local enemyFrame = UIList.UnitFrame(enemyFrameSettings);
+end
 ---------------------
 --CREATORS/REMOVERS--
 ---------------------
+function Board:init()
+    if initialized then
+        return;
+    end
+    self:createAllyFrames();
+    self:createSpellBar();
+    initialized = true;
+end
+
+function Board:createAllyFrames()
+    local tankFrameSettings = {
+        x = XAlliesStart,
+        y = YAlliesStart,
+        w = self.AllyBarWidth,
+        h = self.AllyBarHeight,
+        name = "Tank UnitFrame",
+    }
+    local tankFrame = UIList.UnitFrame(tankFrameSettings);
+    local healerFrameSettings = {
+        parent = tankFrame,
+        w = self.AllyBarWidth,
+        h = self.AllyBarHeight,
+        offsetX = separation+self.AllyBarWidth,
+        name = "Healer UnitFrame"
+    }
+    local healerFrame = UIList.UnitFrame(healerFrameSettings);
+    local dps1FrameSettings = {
+        parent = healerFrame,
+        w = self.AllyBarWidth,
+        h = self.AllyBarHeight,
+        offsetX = separation+self.AllyBarWidth,
+        name = "DPS1 UnitFrame"
+    }
+    local dps1Frame = UIList.UnitFrame(dps1FrameSettings);
+    local dps2FrameSettings = {
+        parent = dps1Frame,
+        w = self.AllyBarWidth,
+        h = self.AllyBarHeight,
+        offsetX = separation+self.AllyBarWidth,
+        name = "DPS2 UnitFrame"
+    }
+    local dps2Frame = UIList.UnitFrame(dps2FrameSettings);
+    local dps3FrameSettings = {
+        parent = dps2Frame,
+        w = self.AllyBarWidth,
+        h = self.AllyBarHeight,
+        offsetX = separation+self.AllyBarWidth,
+        name = "DPS3 UnitFrame"
+    }
+    local dps3Frame = UIList.UnitFrame(dps3FrameSettings);
+    self.allyFrames = {tank = tankFrame, healer = healerFrame, dps1 = dps1Frame, dps2 = dps2Frame, dps3 = dps3Frame};
+end
+
+function Board:createEnemyFrames()
+end
+
+function Board:createSpellBar()
+    local spellBarSettings = {
+        scale = 0.15,
+        separation = 0.1,
+        name = "Main Spellbar",
+        x = love.graphics:getWidth()*0.05,
+        y = love.graphics:getHeight()*0.85,
+    }
+    self.spellBar = UIList.SpellBar(spellBarSettings);
+end
+
 function Board:addAlly(ally)
+    if not initialized then
+        self:init();
+    end
     table.insert(self.allies, ally);
+    --print(self.allyFrames.healer.unit.name)
+    if ally.isTank and not self.allyFrames.tank:hasUnit() then
+        self.allyFrames.tank:setUnit(ally);
+        print("Tank Added")
+        return;
+    elseif ally.isHealer and not self.allyFrames.healer:hasUnit() then
+        self.allyFrames.healer:setUnit(ally);
+        print("Healer Added")
+        return;
+    else --if ally.isDPS then
+        if not self.allyFrames.dps1:hasUnit() then
+            self.allyFrames.dps1:setUnit(ally);
+            print("DPS1 Added")
+            return;
+        elseif not self.allyFrames.dps2:hasUnit() then
+            self.allyFrames.dps2:setUnit(ally);
+            print("DPS2 Added")
+            return;
+        elseif not self.allyFrames.dps3:hasUnit() then
+            self.allyFrames.dps3:setUnit(ally);
+            print("DPS3 Added")
+            return;
+        end
+    end
 end
 
 function Board:addEnemy(enemy)
@@ -27,7 +134,13 @@ function Board:removeAlly(ally)
     for i, v in ipairs(self.allies) do
         if v == ally then
             table.remove(self.allies, i);
-            return;
+            break;
+        end
+    end
+    for i, v in ipairs(self.allyFrames) do
+        if v.unit == ally then
+            v:setUnit(nil);
+            break;
         end
     end
 end
@@ -37,6 +150,21 @@ function Board:removeEnemy(enemy)
         if v == enemy then
             table.remove(self.enemies, i);
             return;
+        end
+    end
+end
+
+function Board:switchAlly(ally, newAlly)
+    for i, v in ipairs(self.allies) do
+        if v == ally then
+            self.allies[i] = newAlly;
+            break;
+        end
+    end
+    for i, v in ipairs(self.allyFrames) do
+        if v.unit == ally then
+            v:setUnit(newAlly);
+            break;
         end
     end
 end
@@ -235,7 +363,7 @@ function Board:useAurasTick(dt)
     end
 end
 
-function Board:reapBuffs()
+function Board:reapAuras()
     for i, v in ipairs(self.allies) do
         for j , w in ipairs(v.buffs) do
             if w.expired then
@@ -243,6 +371,14 @@ function Board:reapBuffs()
                     w:onExpire();
                 end
                 table.remove(v.buffs, j);
+            end
+        end
+        for j, w in ipairs(v.debuffs) do
+            if w.expired then
+                if w.onExpire then
+                    w:onExpire();
+                end
+                table.remove(v.debuffs, j);
             end
         end
     end
@@ -255,8 +391,17 @@ function Board:reapBuffs()
                 table.remove(v.buffs, j);
             end
         end
+        for j, w in ipairs(v.debuffs) do
+            if w.expired then
+                if w.onExpire then
+                    w:onExpire();
+                end
+                table.remove(v.debuffs, j);
+            end
+        end
     end
 end
+
 
 function Board:healAfterFight(percentage)
     for i,v in ipairs(self.allies) do
@@ -272,6 +417,10 @@ function Board:resetEnemyBoard()
     for k,v in pairs(self.enemies) do
         self.enemies[k] = nil;
     end
+    for k,v in pairs(self.enemyFrames) do
+        v:deleteFrame();
+    end
+    self.enemies = {};
 end
 
 function Board:resetAllyBoard()
@@ -322,7 +471,7 @@ local function drawBar(unit, centerX, centerY, barWidth, barHeight)
 end
 
 function Board:drawAllies(centerX, centerY, scale)
-    love.graphics.push();
+    --[[love.graphics.push();
     love.graphics.scale(scale);
     local scaledX = centerX/scale;
     local scaledY = centerY/scale;
@@ -342,7 +491,10 @@ function Board:drawAllies(centerX, centerY, scale)
             count = count + 1;
         end
     end
-    love.graphics.pop();
+    love.graphics.pop();--]]
+    for i, frame in pairs(self.allyFrames) do
+        frame:draw();
+    end
 end
 
 function Board:drawEnemies(centerX, centerY, scale)
@@ -357,12 +509,8 @@ function Board:drawEnemies(centerX, centerY, scale)
     love.graphics.pop();
 end
 
-function Board:drawSpells(firstX, centerY, scale)
-    local player = self:getPlayer()
-    for i, k in ipairs(player.activeSpellList) do
-        assert(k.activeSlot)
-        k:drawCooldown(firstX+((k.activeSlot-1)*k.image:getWidth()*scale), centerY, scale);
-    end
+function Board:drawSpells()
+    self.spellBar:drawAllCooldowns();
 end
 
 return Board;

@@ -52,7 +52,6 @@ end
 
 function PrayToDarkness:cast(target)
     if not target then
-        
         return;
     end
     assert(self.castingUnit);
@@ -65,11 +64,11 @@ function PrayToDarkness:cast(target)
     self.currentCooldown = self.maxCooldown;
 end
 
-function CreatePrayToDarknessDebuff(caster)
+function CreatePrayToDarkness(caster)
     assert(caster);
     local prayToDarknessSpell = Create(Spell,PrayToDarkness);
     prayToDarknessSpell.castingUnit = caster;
     return prayToDarknessSpell;
 end
 
-return {CreatePrayToDarknessDebuff, PrayToDarkness};
+return {CreatePrayToDarkness, PrayToDarkness};

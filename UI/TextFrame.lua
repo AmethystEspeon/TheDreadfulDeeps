@@ -22,6 +22,7 @@ function TextFrame:setText(text)
 end
 
 function TextFrame:draw()
+    assert(self.text, self.name .. " TextFrame: No text to draw");
     love.graphics.push();
     love.graphics.scale(self.scale);
     if self.color then

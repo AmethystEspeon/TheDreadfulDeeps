@@ -99,13 +99,13 @@ function ArcaneConversion:cast(target)
         return;
     end
     local numDebuffRemoved = 0;
-    for i, v in ipairs(target.debuffs) do
-        if not v.expired then
+    for i, v in pairs(target.debuffs) do
+        if not v.expired and v.isDispellable then
             v:dispel(self.castingUnit);
             numDebuffRemoved = numDebuffRemoved + 1;
         end
     end
-    local buff = CreateArcaneConversionBuff(self.castingUnit, numDebuffRemoved);
+    local buff = CreateArcaneConversionBuff(target, numDebuffRemoved);
     target:addBuff(buff);
     self.castingUnit:minusMana(self.manaCost);
     if self.upgrades[2].applied then

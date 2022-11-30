@@ -14,7 +14,6 @@ function ButtonFrame:applyButtonSettings(settings)
     self:applyFrameSettings(settings);
     self.name = settings.name or self.name;
     self.active = settings.active or self.active;
-
     local backgroundSettings = {
         name = self.name .. "Background",
         w = self.w,
@@ -35,15 +34,9 @@ function ButtonFrame:applyButtonSettings(settings)
     self.textFrame = TextFrame(textSettings);
 end
 
-function ButtonFrame:mouseHoveringButton(x, y)
-    if x >= self.x and x <= self.x + self.w and y >= self.y and y <= self.y + self.h then
-        return true;
-    end
-    return false;
-end
-
 function ButtonFrame:draw()
     self.backgroundFrame:draw();
+    self.textFrame:draw();
 end
 
 function ButtonFrame:setOnPress(newFunction)

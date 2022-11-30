@@ -44,7 +44,7 @@ function CreatePriest()
     --Starting Spells--
     local Heal = SpellList.Heal(newPriest);
     table.insert(newPriest.spells, Heal);
-    newPriest:placeInActiveSpellList(newPriest.spells[1], 1);
+    Board.spellBar:setInNextSlot(Heal);
     return newPriest;
 end
 

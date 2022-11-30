@@ -209,7 +209,7 @@ end
 function Reward:getRewardButtons()
     local allButtons = {};
     if not self.rewards.children or #self.rewards.children == 0 then
-        return;
+        return allButtons;
     end
     if #self.rewards.children == 1 then
         return self.rewards.children[1]:getAllButtons();
@@ -223,7 +223,7 @@ end
 function Reward:getAllRewards()
     local allRewards = {};
     if not self.rewards.children or #self.rewards.children == 0 then
-        return;
+        return allRewards;
     end
     if #self.rewards.children == 1 then
         return self.rewards.children[1]:getAllRewards();
