@@ -4,7 +4,9 @@ INSTALLATION/COMPILING
 ------------------
 
 This game is written in Lua using the Love2D framework. In order to turn it into a .exe game you must have [LÖVE](https://love2d.org/) installed and follow the steps found on the [Game Distribution](https://love2d.org/wiki/Game_Distribution) page on their wiki.
-It should be able to run on both Windows or macOS/Linux.
+It should be able to run on Windows, macOS/Linux, Android, and iOS.
+
+If you are running it on Windows, the latest version should also be under Releases.
 
 
 STARTING THE GAME
