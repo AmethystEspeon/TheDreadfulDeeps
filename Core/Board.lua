@@ -102,7 +102,7 @@ function Board:createEnemyFrames()
                 name = "Enemy - Row: " .. i .. " - Column: " .. j,
                 parent = self.enemyBoard,
                 offsetX = startX+(j-1)*(self.EnemyBarWidth+separation),
-                offsetY = (i-1)*(self.EnemyBarHeight*1.5),
+                offsetY = (i-1)*(self.EnemyBarHeight*2.5),
                 w = self.EnemyBarWidth,
                 h = self.EnemyBarHeight,
                 unit = unitToPut,
