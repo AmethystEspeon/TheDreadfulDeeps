@@ -25,9 +25,9 @@ function DecayingPower:resetEffect(unit, table)
     end
 end
 
-function DecayingPower:applyEffect(unit, table)
+function DecayingPower:applyEffect(unit, effectTable)
     local debuff = CreateDecayDebuff(unit);
-    table.insert(debuff, unit);
+    table.insert(unit.debuffs, debuff);
 end
 
 function DecayingPower:preEffect(unit, table)

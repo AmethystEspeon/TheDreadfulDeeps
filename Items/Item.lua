@@ -49,7 +49,7 @@ function Item:createInitialEffectTable()
         stacks = 0;
         active = false;
     }
-    effectTable.effect = function(unit)
+    effectTable.effect = function(_,unit)
         if self.preEffect then
             self:preEffect(unit, effectTable);
         end
