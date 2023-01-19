@@ -15,6 +15,18 @@ function TextFrame:applyTextSettings(settings)
     self.color = settings.color or {0,0,0,1};
     self.align = settings.align or "left";
     self.scale = settings.scale or 1;
+
+    if not self.w or self.w == 0 then
+        self.w = self.font:getWidth(self.text);
+        if self.align == "right" then
+            if not self.parent then
+                self.x = self.x - self.w;
+            else
+                self.offsetX = self.offsetX - self.w;
+                self:updatePosition();
+            end
+        end
+    end
 end
 
 function TextFrame:setText(text)

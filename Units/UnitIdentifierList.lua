@@ -4,7 +4,10 @@ UnitIdentifierList = {
     Sabertooth = "Sabertooth",
     BasicTank = "Basic Tank",
     BasicDPS = "Basic Damage Dealer",
-    CrazedGhoul = "Crazed Ghoul"
+    CrazedGhoul = "Crazed Ghoul",
+    LavaElemental = "Lava Elemental",
+    Survivalist = "Survivalist",
+    Bombardier = "Bombardier",
 }
 
 return UnitIdentifierList

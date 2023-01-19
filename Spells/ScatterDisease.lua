@@ -41,7 +41,7 @@ function ScatterDisease:cast(target)
     if not self:isCastable(target) then
         return
     end
-    target:addDebuff(CreateScatterDiseaseDebuff(target));
+    target:addDebuff(CreateScatterDiseaseDebuff(target, self.castingUnit));
     self.castingUnit:minusMana(self.manaCost);
     self.currentCooldown = self.maxCooldown;
 end

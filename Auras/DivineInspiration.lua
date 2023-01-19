@@ -5,15 +5,17 @@ local _,Buff = unpack(require("Auras.Buff"));
 local DivineInspiration = {};
 
 function DivineInspiration:init()
+    self.castSpellName = SpellIdentifierList.DivineInspiration;
     self.image = ImageList.DivineInspiration;
     self.startingDuration = 15;
     self.currentDuration = 15;
 end
 
-function CreateDivineInspiration(target)
+function CreateDivineInspiration(target, caster)
     assert(target)
     local divineInspirationBuff = Create(Aura,Buff,DivineInspiration);
     divineInspirationBuff.target = target;
+    divineInspirationBuff.caster = caster;
     divineInspirationBuff.lastHealth = target.health;
     return divineInspirationBuff;
 end

@@ -38,4 +38,14 @@ function UnitCardPool:resetEnemyPool()
     end
 end
 
+function UnitCardPool:increaseMaxUnits()
+    for k,v in pairs(self.Enemy) do
+        if type(v) == "table" then
+            if v.Unit.duplicatesAllowed then
+                v.Unit.duplicatesAllowed = v.Unit.duplicatesAllowed + 1;
+            end
+        end
+    end
+end
+
 return UnitCardPool;

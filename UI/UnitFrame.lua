@@ -38,8 +38,9 @@ function UnitFrame:applyUnitSettings(settings)
         w = self.manaFrame.w*0.8,
         offsetX = self.manaFrame.w*0.1,
         offsetY = self.manaFrame.h+self.manaFrame.h*0.5,
-        scale = 1,
+        scale = 0.9,
         align = "center",
+        color = {1,1,1,1},
         parent = self.manaFrame,
     };
     self.nameFrame = TextFrame(nameSettings);
@@ -53,6 +54,9 @@ function UnitFrame:applyUnitSettings(settings)
         parent = self.healthFrame,
     };
     self.healthTextFrame = TextFrame(healthTextSettings);
+    if self.unit then
+        self:setUnit(self.unit);
+    end
 end
 
 function UnitFrame:updatePositionAddon()
@@ -90,7 +94,7 @@ function UnitFrame:draw()
     if not self.unit then
         return;
     end
-    self.healthTextFrame:setText(tostring(self.unit.health) .. "/" .. tostring(self.unit.maxHealth));
+    self.healthTextFrame:setText(tostring(math.floor(self.unit.health)) .. "/" .. tostring(self.unit.maxHealth));
     self:drawAllChildren();
 end
 

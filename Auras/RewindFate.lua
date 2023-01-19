@@ -5,26 +5,29 @@ local _,Buff = unpack(require("Auras.Buff"));
 local RewindFate = {};
 
 function RewindFate:init()
+    self.castSpellName = SpellIdentifierList.RewindFate;
     self.image = ImageList.RewindLate;
     self.startingDuration = 5;
     self.currentDuration = 5;
 end
 
-function CreateRewindFate(target)
+function CreateRewindFate(target, caster)
     assert(target)
     local rewindFateBuff = Create(Aura,Buff,RewindFate);
     rewindFateBuff.target = target;
+    rewindFateBuff.caster = caster;
     rewindFateBuff.previousHealth = target.health;
     rewindFateBuff.previousMana = target.mana;
     --TODO: Find a different way around this.
     if target ~= "dummy" then
-        rewindFateBuff.previousDead = target.isDead();
+        rewindFateBuff.previousDead = target:isDead();
     end
     --TODO: Make it rewind other buffs maybe?
     return rewindFateBuff;
 end
 
 function RewindFate:onExpire()
+    print("OLD:" .. self.previousHealth .. " NEW:" .. self.target.health)
     self.target.health = self.previousHealth;
     self.target.mana = self.previousMana;
     self.target.dead = self.previousDead;

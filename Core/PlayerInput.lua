@@ -1,5 +1,5 @@
 local Board = require("Core.Board");
-local Reward = require("Core.Reward");
+local RewardDirector = require("Directors.RewardDirector");
 local SpellBook = require("Core.SpellBook");
 local TableFuncs = require("Core.TableFuncs");
 local PlayerInput = {
@@ -12,8 +12,8 @@ local PlayerInput = {
 function PlayerInput:fightGetMouseover(enemies, allies)
     local x, y = love.mouse.getPosition();
     for i, enemy in ipairs(enemies) do
-        if x > enemy.boardPosition.x and x < enemy.boardPosition.x + enemy.boardPosition.w and y > enemy.boardPosition.y and y < enemy.boardPosition.y + enemy.boardPosition.h then
-            return enemy;
+        if x > enemy.x and x < enemy.x + enemy.w and y > enemy.y and y < enemy.y + enemy.h then
+            return enemy.unit;
         end
     end
     for i, ally in pairs(allies) do
@@ -24,7 +24,8 @@ function PlayerInput:fightGetMouseover(enemies, allies)
 end
 
 function PlayerInput:fightSceneKeyCheck(key, scanCode)
-    local mouseoverUnit = PlayerInput:fightGetMouseover(Board.enemies, Board.allyFrames);
+    local mouseoverUnit = PlayerInput:fightGetMouseover(Board.enemyFrames, Board.allyFrames);
+    if mouseoverUnit then print(mouseoverUnit.name)end
     if key == "q" or key == "Q" then
         Board.spellBar:castSpellInSlot(1, mouseoverUnit);
     elseif key == "w" or key == "W" then
@@ -33,10 +34,16 @@ function PlayerInput:fightSceneKeyCheck(key, scanCode)
         Board.spellBar:castSpellInSlot(3, mouseoverUnit);
     elseif key == "r" or key == "R" then
         Board.spellBar:castSpellInSlot(4, mouseoverUnit);
-    elseif key == "t" or key == "T" then
+    elseif key == "a" or key == "A" then
         Board.spellBar:castSpellInSlot(5, mouseoverUnit);
-    elseif key == "y" or key == "Y" then
+    elseif key == "s" or key == "S" then
         Board.spellBar:castSpellInSlot(6, mouseoverUnit);
+    elseif key == "d" or key == "D" then
+        Board.spellBar:castSpellInSlot(7, mouseoverUnit);
+    elseif key == "f" or key == "F" then
+        Board.spellBar:castSpellInSlot(8, mouseoverUnit);
+    elseif key == "z" or key == "Z" then
+        Board.spellBar:castSpellInSlot(9, mouseoverUnit);
     end
 end
 
@@ -44,7 +51,7 @@ end
 --REWARD SCENE--
 ----------------
 function PlayerInput:rewardMousePressed(x,y)
-    local allButtons = Reward:getRewardButtons();
+    local allButtons = RewardDirector:getRewardButtons();
     if not allButtons then
         return;
     end
@@ -55,7 +62,7 @@ end
 
 function PlayerInput:rewardMouseReleased(x,y)
     local reward;
-    local allButtons = Reward:getRewardButtons();
+    local allButtons = RewardDirector:getRewardButtons();
     if not allButtons then
         return;
     end

@@ -6,15 +6,18 @@ local ImageList = require("Images.ImageList");
 local Miracle = {};
 
 function Miracle:init()
+    self.castSpellName = SpellIdentifierList.Miracle;
     self.image = ImageList.Miracle;
-    self.startingDuration = 5;
-    self.currentDuration = 5;
+    local castSpell = self:getCastSpell() or {durationMultiplier = 1};
+    self.startingDuration = 5*castSpell.durationMultiplier;
+    self.currentDuration = 5*castSpell.durationMultiplier;
 end
 
-function CreateMiracle(target)
+function CreateMiracle(target, caster)
     assert(target);
     local miracleBuff = Create(Aura,Buff,Miracle);
     miracleBuff.target = target;
+    miracleBuff.caster = caster;
     return miracleBuff;
 end
 

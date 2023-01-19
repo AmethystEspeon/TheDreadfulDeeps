@@ -32,6 +32,11 @@ function Atonement:init()
         "\nDamage Converted: " .. tostring(self.effect) .. "%";
     
     self:addUpgrades();
+
+    -----------------------------
+    --NONAPPLICABLE MULTIPLIERS--
+    -----------------------------
+    self.durationMultiplier = 0;
 end
 
 function Atonement:addUpgrades()
@@ -102,16 +107,16 @@ function Atonement:cast(target)
         return;
     end
     if self.upgrades[2].applied then
-        target:minusHealth(self.damage + target.health * self.upgrades[2].damageMultiplier);
+        target:minusHealth((self.damage*self.damageHealMultiplier + target.health * self.upgrades[2].damageMultiplier)*self.castingUnit.damageMultiplier);
     else
-        target:minusHealth(self.damage);
+        target:minusHealth(self.damage*self.damageHealMultiplier);
     end
     local weakestAlly = Board:getLowestHealthShieldAliveAlly();
     if weakestAlly then
         if self.upgrades[1].applied and weakestAlly:getShields() > 0 then
-            weakestAlly:addShields(self.damage * (self.effect + self.effect * self.upgrades[1].shieldMultiplier));
+            weakestAlly:addShields(self.damage*self.damageHealMultiplier * (self.effect + self.effect * self.upgrades[1].shieldMultiplier));
         else
-            weakestAlly:addShields(self.damage * self.effect);
+            weakestAlly:addShields(self.damage*self.damageHealMultiplier * self.effect);
         end
     end
     self.castingUnit:minusMana(self.manaCost);

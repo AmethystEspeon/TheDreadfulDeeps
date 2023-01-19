@@ -28,6 +28,11 @@ function Shatter:init()
         "MP Cost: " .. tostring(self.manaCost) ..
         "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
         "\nDamage: " ..tostring(self.damage);
+
+    -----------------------------
+    --NONAPPLICABLE MULTIPLIERS--
+    -----------------------------
+    self.durationMultiplier = 0;
 end
 
 function Shatter:cast(target)

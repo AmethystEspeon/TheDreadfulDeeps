@@ -13,7 +13,7 @@ local CrazedGhoul = {};
 -- attack rate. Has a spell that deals a small damage over time to all enemies.
 ----------------
 function CrazedGhoul:init()
-    self.maxHealth = 1000;
+    self.maxHealth = 700;
     self.maxMana = 18;
     self.health = self.maxHealth;
     self.mana = 0;
@@ -48,6 +48,7 @@ function CrazedGhoul:useAbility(dt)
     if self.mana >= self.maxMana then
         for k,unit in pairs(Board.allies) do
             if not unit:isDead() then
+                print("Casted " .. self.spells[1].name .. " on " .. unit.name .. "!")
                 self.spells[1]:cast(unit);
                 self.mana = 0;
             end

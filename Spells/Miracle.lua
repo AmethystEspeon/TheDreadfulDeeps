@@ -17,9 +17,9 @@ local Miracle = {};
 local descBuff = CreateMiracleBuff("dummy");
 function Miracle:init()
     self.image = ImageList.Miracle;
-    self.maxCooldown = 300;
+    self.maxCooldown = 60;
     self.currentCooldown = 0;
-    self.manaCost = 600;
+    self.manaCost = 300;
 
     self.name = SpellIdentifierList.Miracle;
     self.rarity = SpellIdentifierList.Rarity.Legendary;
@@ -55,9 +55,10 @@ function Miracle:cast(target)
     if not self:isCastable(target) then
         return
     end
-    target:addHealth(target:getMaxHealth());
-    target:addBuff(CreateMiracleBuff(target));
-    self.castingUnit.minusMana(self.manaCost);
+    target.dead = false;
+    target:addHealth(target:getMaxHealth()*self.damageHealMultiplier);
+    target:addBuff(CreateMiracleBuff(target, self.castingUnit));
+    self.castingUnit:minusMana(self.manaCost);
     self.currentCooldown = self.maxCooldown;
 end
 

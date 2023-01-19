@@ -6,26 +6,31 @@ local ImageList = require("Images.ImageList");
 local ArcaneConversion = {};
 
 function ArcaneConversion:init()
+    self.castSpellName = SpellIdentifierList.ArcaneConversion;
     self.image = ImageList.ArcaneConversion;
-    self.startingDuration = 10;
-    self.currentDuration = 10;
+
+    local castSpell = self:getCastSpell() or {durationMultiplier = 1};
+    self.startingDuration = 10*castSpell.durationMultiplier;
+    self.currentDuration = 10*castSpell.durationMultiplier;
     self.tickInterval = 0.1;
     self.timeSinceLastTick = 0;
     self.healPerTick = 5;
 end
 
-function CreateArcaneConversion(target, numDebuffRemoved)
+function CreateArcaneConversion(target, caster, numDebuffRemoved)
     assert(target);
     local arcaneConversionBuff = Create(Aura,Buff,ArcaneConversion);
     arcaneConversionBuff.numDebuffRemoved = numDebuffRemoved;
     arcaneConversionBuff.target = target;
+    arcaneConversionBuff.caster = caster;
     return arcaneConversionBuff;
 end
 
 function ArcaneConversion:tick(dt)
     self.timeSinceLastTick = self.timeSinceLastTick + dt
     if self.timeSinceLastTick >= self.tickInterval then
-        self.target:addHealth(self.healPerTick+self.healPerTick*self.numDebuffRemoved);
+        local castSpell = self:getCastSpell();
+        self.target:addHealth((self.healPerTick+self.healPerTick*self.numDebuffRemoved)*castSpell.damageHealMultiplier);
         self.timeSinceLastTick = 0;
     end
     if self.currentDuration > 0 then

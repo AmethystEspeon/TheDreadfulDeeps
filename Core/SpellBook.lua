@@ -15,8 +15,6 @@ local SpellsPerPage = 8;
 local iconSize = 0.15; --Scale of icons. Same is used for drawing on spellbar.
 local gap = (BookHeight/5-512*iconSize)/2;
 
-local currentlyDraggedSpell = nil;
-
 local SpellBook = {};
 
 function SpellBook:init()
@@ -29,8 +27,13 @@ function SpellBook:init()
     self:createDragFrames();
     self:createPageButtons();
     self:createExitButton();
+    self:createHelpText();
     self:setSpellsInSpellBook()
 end
+
+-------------------
+--LOCAL FUNCTIONS--
+-------------------
 
 --------------------
 --SCENE MANAGEMENT--
@@ -54,6 +57,42 @@ end
 ------------------
 --FRAME CREATION--
 ------------------
+
+--==LOCAL==--
+local function createDragAndDropHelpText(x,y)
+    local settings = {
+        parent = SpellBook.background,
+        name = "DragAndDropHelpText",
+        offsetX = x,
+        offsetY = y,
+        w = BookWidth,
+        h = BookHeight/5,
+        color = {0,0,0,1},
+        text = "Click & Drag spells to the bar below",
+        align = "center"
+    };
+    local helpText = UIList.TextFrame(settings);
+    return helpText;
+end
+
+local function createNextBattleHelpText(x,y)
+    local settings = {
+        parent = SpellBook.exitButton,
+        name = "NextBattleHelpText",
+        offsetX = x,
+        offsetY = y,
+        w = 0,
+        h = BookHeight/5,
+        color = {0,0,0,1},
+        text = "Click to start next battle",
+        align = "right",
+        scale = 0.75,
+    };
+    local helpText = UIList.TextFrame(settings);
+    return helpText;
+end
+
+--==PUBLIC==--
 function SpellBook:createBackground()
     local backgroundSettings = {
         name = "SpellBookBackground",
@@ -74,7 +113,10 @@ function SpellBook:createSpellFrames()
         if i > HalfOfSpells then
             offsetX = offsetX + BookWidth/2;
         end
-        local offsetY = (i-1)%HalfOfSpells*(BookHeight/HalfOfSpells)+gap;
+        local offsetY = (i-1)%HalfOfSpells*(BookHeight/(HalfOfSpells+1))+gap;
+        if (i-1)%HalfOfSpells == 0 then
+            offsetY = (i-1)%HalfOfSpells*(BookHeight/HalfOfSpells)+gap;
+        end
         local spellSettings = {
             name = "SpellBook SpellFrame " .. i,
             parent = self.background,
@@ -206,6 +248,11 @@ function SpellBook:createPageButtons()
     createPreviousButton()
 end
 
+function SpellBook:createHelpText()
+    self.dragAndDropHelpText = createDragAndDropHelpText(0, SpellBook.background.h*0.925);
+    self.nextBattleHelpText = createNextBattleHelpText(self.exitButton.w-5,-10);
+end
+
 function SpellBook:setSpellsInSpellBook()
     if not SpellBook.Spells then
         return;
@@ -249,11 +296,19 @@ end
 ------------------
 --DRAW FUNCTIONS--
 ------------------
+--==LOCAL==--
+local function drawHelpText()
+    SpellBook.dragAndDropHelpText:draw();
+    SpellBook.nextBattleHelpText:draw();
+end
+
+--==PUBLIC==--
 function SpellBook:draw()
     self.background:draw();
     self.nextButton:draw();
     self.previousButton:draw();
     self.exitButton:draw();
+    drawHelpText();
     for i = 1, SpellsPerPage do
         if self.spellFrames[i].spell then
             self.spellFrames[i]:drawTexture();

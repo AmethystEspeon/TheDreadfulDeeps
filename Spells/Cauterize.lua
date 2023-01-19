@@ -53,7 +53,7 @@ function Cauterize:cast(target)
         return;
     end
     target:minusHealth(self.healthCost);
-    target:addBuff(CreateCauterizeBuff(target));
+    target:addBuff(CreateCauterizeBuff(target, self.castingUnit));
     self.castingUnit:minusMana(self.manaCost);
     self.currentCooldown = self.maxCooldown;
 end

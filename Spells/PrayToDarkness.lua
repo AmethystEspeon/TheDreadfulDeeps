@@ -58,8 +58,8 @@ function PrayToDarkness:cast(target)
     if not self:isCastable(target) then
         return;
     end
-    target:addHealth(self.heal);
-    target:addDebuff(CreatePrayToDarknessDebuff(target));
+    target:addHealth(self.heal*self.damageHealMultiplier);
+    target:addDebuff(CreatePrayToDarknessDebuff(target, self.castingUnit));
     self.castingUnit:minusMana(self.manaCost);
     self.currentCooldown = self.maxCooldown;
 end

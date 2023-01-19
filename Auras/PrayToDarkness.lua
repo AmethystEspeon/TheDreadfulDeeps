@@ -6,18 +6,22 @@ local ImageList = require("Images.ImageList");
 local PrayToDarkness = {};
 
 function PrayToDarkness:init()
+    self.castSpellName = SpellIdentifierList.PrayToDarkness;
     self.image = ImageList.PrayToDarkness;
     self.timeSinceLastTick = 0;
     self.tickInterval = 1;
-    self.startingDuration = 15;
-    self.currentDuration = 15;
-    self.damagePerTick = 20;
+
+    local castSpell = self:getCastSpell() or {durationMultiplier = 1};
+    self.startingDuration = 15*castSpell.durationMultiplier;
+    self.currentDuration = 15*castSpell.durationMultiplier;
+    self.damagePerTick = 20/castSpell.durationMultiplier; --Same damage over time, longer duration.
 end
 
-function CreatePrayToDarkness(target)
+function CreatePrayToDarkness(target, caster)
     assert(target);
     local prayToDarknessDebuff = Create(Aura,Debuff,PrayToDarkness);
     prayToDarknessDebuff.target = target;
+    prayToDarknessDebuff.caster = caster;
     return prayToDarknessDebuff;
 end
 

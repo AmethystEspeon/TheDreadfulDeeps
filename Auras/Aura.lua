@@ -39,6 +39,17 @@ function Aura:drawDuration(x, y, scale)
     love.graphics.pop()
 end
 
+function Aura:getCastSpell()
+    if not self.caster then
+        return;
+    end
+    for _, spell in ipairs(self.caster.spells) do
+        if spell.name == self.castSpellName then
+            return spell;
+        end
+    end
+end
+
 function CreateAura()
     return Create(Aura);
 end

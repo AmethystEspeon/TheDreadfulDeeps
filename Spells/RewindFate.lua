@@ -17,7 +17,7 @@ local RewindFate = {};
 local descBuff = CreateRewindFateBuff("dummy");
 function RewindFate:init()
     self.image = ImageList.RewindFate;
-    self.maxCooldown = 120;
+    self.maxCooldown = 45;
     self.currentCooldown = 0;
     self.manaCost = 200;
 
@@ -32,6 +32,12 @@ function RewindFate:init()
         "MP Cost: " .. tostring(self.manaCost) ..
         "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
         "\nRewind Duration: " .. tostring(descBuff.startingDuration) .. "s";
+
+    -----------------------------
+    --NONAPPLICABLE MULTIPLIERS--
+    -----------------------------
+    self.durationMultiplier = 0;
+    self.damageHealMultiplier = 0;
 end
 
 function RewindFate:getCardCount(preventDupes)
@@ -54,7 +60,7 @@ function RewindFate:cast(target)
         print("rewind not cast")
         return;
     end
-    target:addBuff(CreateRewindFateBuff(target));
+    target:addBuff(CreateRewindFateBuff(target, self.castingUnit));
     if self.castingUnit == target then
         self.castingUnit:minusMana(self.castingUnit:getMaxMana());
     else

@@ -7,6 +7,12 @@ function Unit:init()
     self.spells = {};
     self.buffs = {};
     self.debuffs = {};
+    self.itemEffects = {};
+
+    self.healMultiplier = 1;
+    self.damageMultiplier = 1;
+    self.shieldMultiplier = 1;
+    self.incomingDamageMultiplier = 1;
 end
 ---------------
 ----SHIELDS----
@@ -22,7 +28,7 @@ function Unit:addShields(amount)
     if not self.Shields then
         self.Shields = 0;
     end
-    self.Shields = self.Shields + amount;
+    self.Shields = self.Shields + (amount*self.shieldMultiplier);
     return;
 end
 
@@ -30,7 +36,7 @@ function Unit:minusShields(amount)
     if not self.Shields then
         self.Shields = 0;
     end
-    self.Shields = self.Shields - amount;
+    self.Shields = self.Shields - (amount*self.incomingDamageMultiplier);
     local shieldBreak = 0;
     if self.Shields < 0 then
         shieldBreak = math.abs(self.Shields);
@@ -64,7 +70,7 @@ function Unit:addHealth(amount)
         --print(" unit | function Unit:addHealth");
         return
     end
-    self.health = self.health + amount;
+    self.health = self.health + (amount*self.healMultiplier);
     if self.health > self.maxHealth then
         self.health = self.maxHealth;
     end
@@ -76,7 +82,7 @@ function Unit:minusHealth(amount)
         return --Don't take damage
     end
     amount = self:minusShields(amount);
-    self.health = self.health - amount;
+    self.health = self.health - (amount*self.incomingDamageMultiplier);
     if self.health <= 0 then
         self.health = 0;
         self:die();
@@ -152,6 +158,28 @@ function Unit:addDebuff(debuff)
     end
 end
 
+-------------
+----ITEMS----
+-------------
+function Unit:makeItemEffectsActive()
+    for _, itemEffect in ipairs(self.itemEffects) do
+        itemEffect:effect(self);
+    end
+end
+
+function Unit:disableItemEffects()
+    for _, itemEffect in ipairs(self.itemEffects) do
+        itemEffect.makeInactive = true;
+        itemEffect:effect(self)
+    end
+end
+
+function Unit:enableItemEffects()
+    for _, itemEffect in ipairs(self.itemEffects) do
+        itemEffect.makeInactive = false;
+        itemEffect:effect(self)
+    end
+end
 ---------------
 ----GENERAL----
 ---------------

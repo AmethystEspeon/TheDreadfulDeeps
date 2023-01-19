@@ -115,6 +115,7 @@ function EnemyDirector:fillBoard()
         end
         --print("Current Tokens: " .. currentTokens);
     end
+    Board:createEnemyFrames();
 end
 
 return EnemyDirector

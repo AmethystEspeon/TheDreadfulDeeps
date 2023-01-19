@@ -2,8 +2,37 @@ local Create = require("Core.Create");
 local _, Frame = unpack(require("UI.Frame"));
 local SpellFrame = unpack(require("UI.SpellFrame"));
 local BackgroundFrame = unpack(require("UI.BackgroundFrame"));
+local TextFrame = unpack(require("UI.TextFrame"));
 
 local SpellBar = {};
+
+local function determineHotkey(i)
+    if i == 1 then
+        return "Q";
+    elseif i == 2 then
+        return "W";
+    elseif i == 3 then
+        return "E";
+    elseif i == 4 then
+        return "R";
+    elseif i == 5 then
+        return "A";
+    elseif i == 6 then
+        return "S";
+    elseif i == 7 then
+        return "D";
+    elseif i == 8 then
+        return "F";
+    elseif i == 9 then
+        return "Z";
+    elseif i == 10 then
+        return "X";
+    elseif i == 11 then
+        return "C";
+    elseif i == 12 then
+        return "V";
+    end
+end
 
 function SpellBar:init()
     self.name = "SpellBar";
@@ -15,6 +44,7 @@ function SpellBar:drawAllCooldowns()
         if spellFrame.drawAllCooldowns then
             spellFrame.backgroundFrame:draw();
             spellFrame:drawAllCooldowns();
+            spellFrame.hotkeyFrame:draw();
         end
     end
 end
@@ -90,6 +120,21 @@ function SpellBar:applySpellBarSettings(settings)
         local background = BackgroundFrame(backgroundSettings);
         self.spellFrames[i] = spellFrame;
         self.spellFrames[i].backgroundFrame = background;
+
+        local hotkey = determineHotkey(i);
+        local textSettings = {
+            name = "HotkeyTextOnBar " .. self.name .. " " .. i,
+            parent = background,
+            text = hotkey,
+            offsetX = 5,
+            offsetY = 2.5,
+            color = {1,1,1,1},
+            align = "left",
+            scale = 1,
+            w = 50,
+        }
+        local hotkeyText = TextFrame(textSettings);
+        self.spellFrames[i].hotkeyFrame = hotkeyText;
     end
 end
 

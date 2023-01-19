@@ -105,7 +105,7 @@ function ArcaneConversion:cast(target)
             numDebuffRemoved = numDebuffRemoved + 1;
         end
     end
-    local buff = CreateArcaneConversionBuff(target, numDebuffRemoved);
+    local buff = CreateArcaneConversionBuff(target, self.castingUnit, numDebuffRemoved);
     target:addBuff(buff);
     self.castingUnit:minusMana(self.manaCost);
     if self.upgrades[2].applied then

@@ -5,12 +5,14 @@ local SpellList = require("Spells.SpellList");
 local Board = require("Core.Board");
 local BasicDPS = {};
 local UnitIdentifierList = require("Units.UnitIdentifierList");
+local ImageList = require("Images.ImageList");
 ----------------
 ----ANALYSIS----
 ----------------
 -- The basic DPS you start with. Low hp, high damage.
 ----------------
 function BasicDPS:init()
+    self.image = ImageList.BasicDPS;
     self.maxHealth = 800;
     self.health = self.maxHealth;
     self.attackDamage = 100;
@@ -25,6 +27,8 @@ function BasicDPS:init()
 
     self.isDPS = true;
     self.name = UnitIdentifierList.BasicDPS;
+
+    self.description = "The basic DPS - Low health, high damage. Has a heavy attack that deals some damage.";
 end
 
 function BasicDPS:attack(dt)

@@ -26,6 +26,11 @@ function HeavyAttack:init()
         "MP Cost: " .. tostring(self.manaCost) ..
         "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
         "\nDamage: " ..tostring(self.damage);
+
+    -----------------------------
+    --NONAPPLICABLE MULTIPLIERS--
+    -----------------------------
+    self.durationMultiplier = 0;
 end
 
 function HeavyAttack:cast(target)
@@ -37,7 +42,7 @@ function HeavyAttack:cast(target)
     if not self:isCastable(target) then
         return
     end
-    target:minusHealth(self.damage);
+    target:minusHealth(self.damage*self.damageHealMultiplier);
     self.castingUnit:minusMana(self.manaCost);
     self.currentCooldown = self.maxCooldown;
 end

@@ -56,7 +56,7 @@ function Regeneration:cast(target)
     if not self:isCastable(target) then
         return;
     end
-    target:addBuff(CreateRegenerationBuff(target));
+    target:addBuff(CreateRegenerationBuff(target, self.castingUnit));
     self.castingUnit:minusMana(self.manaCost);
     self.currentCooldown = self.maxCooldown;
 end

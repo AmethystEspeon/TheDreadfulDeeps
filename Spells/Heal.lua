@@ -5,6 +5,8 @@ local SpellIdentifierList = require("Spells.SpellIdentifierList");
 
 local Heal = {};
 
+local CreateHealDispelBuff = unpack(require("Auras.HealDispel"));
+local CreateHealCooldownBuff = unpack(require("Auras.HealCooldown"));
 function Heal:init()
     self.image = ImageList.Heal;
     self.maxCooldown = 3;
@@ -21,6 +23,58 @@ function Heal:init()
         "MP Cost: " .. tostring(self.manaCost) ..
         "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
         "\nHeal: " ..tostring(self.heal);
+
+    self:addUpgrades();
+
+    self.maxStacks = 5;
+    self.initialMaxCooldown = self.maxCooldown;
+
+    -----------------------------
+    --NONAPPLICABLE MULTIPLIERS--
+    -----------------------------
+    self.durationMultiplier = 0;
+end
+
+function Heal:addUpgrades()
+    local function updateDescription()
+        self.description = "A small instant heal on a low cooldown." .. "\n\n" ..
+        "MP Cost: " .. tostring(self.manaCost) ..
+        "\nCooldown: " .. tostring(self.maxCooldown) .. "s" ..
+        "\nHeal: " ..tostring(self.heal);
+        if self.upgrades[1].applied then
+            self.description = self.description .. "\n\n" .. self.upgrades[1].description;
+        end
+        if self.upgrades[2].applied then
+            self.description = self.description .. "\n\n" .. self.upgrades[2].description;
+        end
+    end
+    self.upgrades = self.upgrades or {};
+
+    self.upgrades[1] = {
+        uniqueUpgrade = true;
+        name = SpellIdentifierList.Heal .. ": Unique " .. SpellIdentifierList.Upgrades.Special;
+        image = self.image;
+        description = "Heal instantly dispels incoming debuffs for 1 second.";
+        applied = false;
+
+        choose = function()
+            self.upgrades[1].applied = true;
+            self.castableOnMaxHealth = true;
+            updateDescription();
+        end;
+    }
+    self.upgrades[2] = {
+        uniqueUpgrade = true;
+        name = SpellIdentifierList.Heal .. ": Unique " .. SpellIdentifierList.Upgrades.Cooldown;
+        image = self.image;
+        description = "Casting adds/refreshes a buff that reduces the cooldown of Heal by 0.5s per stack. Max 5 stacks.";
+        applied = false;
+
+        choose = function()
+            self.upgrades[2].applied = true;
+            updateDescription();
+        end;
+    }
 end
 
 function Heal:getCardCount(preventDupes)
@@ -43,9 +97,32 @@ function Heal:cast(target)
     if not self:isCastable(target) then
         return;
     end
-    target:addHealth(self.heal);
+    target:addHealth(self.heal*self.damageHealMultiplier);
+    if self.upgrades[1].applied then
+        target:addBuff(CreateHealDispelBuff(target,self.castingUnit));
+    end
+    if self.upgrades[2].applied then
+        self.stacks = self.stacks or 0;
+        if self.stacks < self.maxStacks then
+            self.stacks = self.stacks + 1;
+        end
+
+        local buffAlreadyApplied = false;
+        for _, healBuff in pairs(self.castingUnit.buffs) do
+            if healBuff.name == self.name .. "Cooldown" then
+                healBuff.stacks = self.stacks;
+                healBuff.currentDuration = healBuff.startingDuration;
+                buffAlreadyApplied = true;
+            end
+        end
+        if not buffAlreadyApplied then
+            self.castingUnit:addBuff(CreateHealCooldownBuff(self.castingUnit,self.castingUnit));
+        end
+        self.maxCooldown = self.initialMaxCooldown - 0.5*self.stacks;
+    end
     self.castingUnit:minusMana(self.manaCost);
     self.currentCooldown = self.maxCooldown;
+    print(target.maxMana)
 end
 
 function CreateHeal(caster)

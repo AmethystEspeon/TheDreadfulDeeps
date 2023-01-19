@@ -5,6 +5,7 @@ local SpellList = require("Spells.SpellList");
 local Board = require("Core.Board");
 local Sabertooth = {};
 local UnitIdentifierList = require("Units.UnitIdentifierList");
+local ImageList = require("Images.ImageList");
 ----------------
 ----ANALYSIS----
 ----------------
@@ -13,6 +14,7 @@ local UnitIdentifierList = require("Units.UnitIdentifierList");
 -- that always attacks the lowest hp enemy. Only does single target.
 ----------------
 function Sabertooth:init()
+    self.image = ImageList.Sabertooth;
     self.maxHealth = 1200;
     self.maxMana = 30;
     self.mana = 0;
@@ -22,7 +24,13 @@ function Sabertooth:init()
     self.attackInterval = 0.5;
     self.timeSinceLastAttack = self.attackInterval;
 
+    self.manaPerSecond = 1;
+    self.manaTickRate = 0.1;
+    self.timeSinceLastMana = 0;
+
     self.name = UnitIdentifierList.Sabertooth;
+
+    self.description = "DPS - Always attacks the lowest health enemy. Has an execute ability that deals damage based on the target's missing health.";
 end
 
 function Sabertooth:attack(dt)

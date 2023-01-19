@@ -13,18 +13,16 @@ local Board = {
     enemyFrames = {},
     AllyBarWidth = 150,
     AllyBarHeight = 60,
-    EnemyBarWidth = 150,
-    EnemyBarHeight = 60,
+    EnemyBarWidth = 125,
+    EnemyBarHeight = 40,
 };
 
 local separation = 10;
 local XAlliesStart = love.graphics.getWidth()/2-2.5*Board.AllyBarWidth-2*separation;
 local YAlliesStart = love.graphics.getHeight()*2/3;
+local XEnemiesStart = love.graphics.getWidth()/2-2.5*Board.EnemyBarWidth-2*separation;
+local YEnemiesStart = love.graphics.getHeight()-love.graphics.getHeight()*0.9;
 
-local function createEnemyFrameSingle(enemy)
-    local enemyFrameSettings = {}
-    local enemyFrame = UIList.UnitFrame(enemyFrameSettings);
-end
 ---------------------
 --CREATORS/REMOVERS--
 ---------------------
@@ -33,6 +31,7 @@ function Board:init()
         return;
     end
     self:createAllyFrames();
+    self:createEnemyBoard();
     self:createSpellBar();
     initialized = true;
 end
@@ -82,12 +81,53 @@ function Board:createAllyFrames()
 end
 
 function Board:createEnemyFrames()
+    --[[
+        TODO:
+        DONE-Create area on board for enemy frames
+        -Choose/create a way for it to center itself
+        -Start creating frames left to right
+    ]]
+
+    local numRows = math.ceil(#self.enemies/5);
+    for i = 1, numRows do
+        local currentStart = 1+(i-1)*5;
+        local currentEnd = math.min(currentStart+4, #self.enemies);
+        local numFrames = currentEnd-currentStart+1;
+        local startX = self.enemyBoard.w/2-self.EnemyBarWidth/2;
+        startX = startX-self.EnemyBarWidth/2*(numFrames-1)-separation/2*(numFrames-1)
+
+        for j = 1, numFrames do
+            local unitToPut = self.enemies[currentStart+j-1];
+            local frameSettings = {
+                name = "Enemy - Row: " .. i .. " - Column: " .. j,
+                parent = self.enemyBoard,
+                offsetX = startX+(j-1)*(self.EnemyBarWidth+separation),
+                offsetY = (i-1)*(self.EnemyBarHeight*1.5),
+                w = self.EnemyBarWidth,
+                h = self.EnemyBarHeight,
+                unit = unitToPut,
+            }
+            local newFrame = UIList.UnitFrame(frameSettings);
+            table.insert(self.enemyFrames, newFrame);
+        end
+    end
+
+end
+
+function Board:createEnemyBoard()
+    local enemyBoardSettings = {
+        x = XEnemiesStart,
+        y = YEnemiesStart,
+        w = 5*self.EnemyBarWidth+4*separation,
+        h = 4*self.EnemyBarHeight+3*separation,
+    }
+    self.enemyBoard = UIList.Frame(enemyBoardSettings);
 end
 
 function Board:createSpellBar()
     local spellBarSettings = {
         scale = 0.15,
-        separation = 0.1,
+        separation = 2,
         name = "Main Spellbar",
         x = love.graphics:getWidth()*0.05,
         y = love.graphics:getHeight()*0.85,
@@ -149,21 +189,25 @@ function Board:removeEnemy(enemy)
     for i, v in ipairs(self.enemies) do
         if v == enemy then
             table.remove(self.enemies, i);
+            table.remove(self.enemyFrames, i);
             return;
         end
     end
 end
 
 function Board:switchAlly(ally, newAlly)
-    for i, v in ipairs(self.allies) do
-        if v == ally then
-            self.allies[i] = newAlly;
+    for i, v in pairs(self.allyFrames) do
+        print(v.unit.name .. " vs " .. ally.name)
+        if v.unit == ally then
+            print("Switching " .. v.unit.name .. " to " .. newAlly.name);
+            v:setUnit(newAlly);
+            print("Switched to " .. v.unit.name);
             break;
         end
     end
-    for i, v in ipairs(self.allyFrames) do
-        if v.unit == ally then
-            v:setUnit(newAlly);
+    for i, v in ipairs(self.allies) do
+        if v == ally then
+            self.allies[i] = newAlly;
             break;
         end
     end
@@ -206,6 +250,24 @@ function Board:getLowestHealthAliveEnemy()
         end
     end
     return lowestHealthEnemy;
+end
+
+function Board:getHighestHealthAliveEnemy()
+    local aliveEnemies = {};
+    for i, v in ipairs(self.enemies) do
+        if not v:isDead() then
+            table.insert(aliveEnemies, v);
+        end
+    end
+    local highestHealthEnemy = nil;
+    local highestHealth = 0;
+    for i, v in ipairs(aliveEnemies) do
+        if highestHealth < v:getHealth() then
+            highestHealthEnemy = v;
+            highestHealth = v:getHealth();
+        end
+    end
+    return highestHealthEnemy;
 end
 
 function Board:getLowestHealthShieldAliveAlly()
@@ -409,6 +471,9 @@ function Board:healAfterFight(percentage)
             v.dead = false;
         end
         v:addHealth(v:getMaxHealth() * percentage);
+        if v.isHealer then
+            v:addMana(v:getMaxMana() * percentage*2);
+        end
     end
 end
 
@@ -420,7 +485,9 @@ function Board:resetEnemyBoard()
     for k,v in pairs(self.enemyFrames) do
         v:deleteFrame();
     end
+    self.enemyBoard.children = {};
     self.enemies = {};
+    self.enemyFrames = {};
 end
 
 function Board:resetAllyBoard()
@@ -436,77 +503,16 @@ end
 -----------------
 --BAR FUNCTIONS--
 -----------------
-local function drawBar(unit, centerX, centerY, barWidth, barHeight)
-    --------------
-    --Background--
-    --------------
-    if unit:isDead() then
-        love.graphics.setColor(DeadBackgroundColor[1], DeadBackgroundColor[2], DeadBackgroundColor[3]);
-    else
-        love.graphics.setColor(AliveBackgroundColor[1], AliveBackgroundColor[2], AliveBackgroundColor[3]);
-    end
-    --health--
-    love.graphics.rectangle("fill", centerX-1, centerY-1, barWidth+2, barHeight+2);
-    --Mana--
-    if unit.mana then
-        love.graphics.rectangle("fill", centerX-1, centerY+barHeight-1, barWidth+2, barHeight/4+2);
-    end
-    --------------
-    --Foreground--
-    --------------
-    --health--
-    if unit.isAlly then
-        local green = 1 * (unit:getHealth()/unit:getMaxHealth());
-        local red = 1 - green;
-        love.graphics.setColor(red, green, 0);
-    else
-        love.graphics.setColor(1,0,0);
-    end
-    love.graphics.rectangle("fill", centerX, centerY, barWidth * (unit:getHealth()/unit:getMaxHealth()), barHeight);
-    --Mana--
-    if unit.mana then
-        love.graphics.setColor(0,0,1);
-        love.graphics.rectangle("fill", centerX, centerY+barHeight, barWidth * (unit.mana/unit.maxMana), barHeight/4);
-    end
-end
-
 function Board:drawAllies(centerX, centerY, scale)
-    --[[love.graphics.push();
-    love.graphics.scale(scale);
-    local scaledX = centerX/scale;
-    local scaledY = centerY/scale;
-    local count = 1;
-    for i, v in ipairs(self.allies) do
-        if v.isTank then
-            drawBar(v, scaledX-(2*self.AllyBarWidth), scaledY, self.AllyBarWidth, self.AllyBarHeight);
-            v.boardPosition = {x = centerX-(2*self.AllyBarWidth*scale), y = centerY, w = self.AllyBarWidth*scale, h = self.AllyBarHeight*scale};
-        end
-        if v.isHealer then
-            drawBar(v, scaledX-(1*self.AllyBarWidth), scaledY, self.AllyBarWidth, self.AllyBarHeight);
-            v.boardPosition = {x = centerX-(1*self.AllyBarWidth*scale), y = centerY, w = self.AllyBarWidth*scale, h = self.AllyBarHeight*scale};
-        end
-        if v.isDPS then
-            drawBar(v, scaledX+((count-1)*self.AllyBarWidth), scaledY, self.AllyBarWidth, self.AllyBarHeight);
-            v.boardPosition = {x = centerX+((count-1)*self.AllyBarWidth*scale), y = centerY, w = self.AllyBarWidth*scale, h = self.AllyBarHeight*scale};
-            count = count + 1;
-        end
-    end
-    love.graphics.pop();--]]
     for i, frame in pairs(self.allyFrames) do
         frame:draw();
     end
 end
 
 function Board:drawEnemies(centerX, centerY, scale)
-    love.graphics.push();
-    love.graphics.scale(scale);
-    local scaledX = centerX/scale;
-    local scaledY = centerY/scale;
-    for i, v in ipairs(self.enemies) do
-        drawBar(v, scaledX, scaledY+((i-1)*(self.EnemyBarHeight+self.EnemyBarHeight/4)), self.EnemyBarWidth, self.EnemyBarHeight);
-        v.boardPosition = {x = centerX, y = centerY+((i-1)*self.EnemyBarHeight*scale), w = self.EnemyBarWidth*scale, h = self.EnemyBarHeight*scale};
+    for i, frame in pairs(self.enemyFrames) do
+        frame:draw();
     end
-    love.graphics.pop();
 end
 
 function Board:drawSpells()

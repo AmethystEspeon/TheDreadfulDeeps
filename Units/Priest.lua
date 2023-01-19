@@ -19,12 +19,16 @@ function Priest:init()
     self.maxMana = 150;
     self.health = self.maxHealth;
     self.mana = self.maxMana;
-    self.manaPerSecond = 20;
-    self.attackDamage = 20;
+    self.manaPerSecond = 5;
+    self.attackDamage = 5;
     self.attackInterval = 1;
     self.timeSinceLastAttack = self.attackInterval;
+    self.maxManaPerLevel = 50;
+    self.manaRegenPerLevel = 5;
 
     self.name = UnitIdentifierList.Priest;
+
+    self.description = "Healer - Starts with a large mana pool and mana regen, but a pitiful attack. Their starter spell is Heal";
 end
 
 function Priest:attack(dt)
@@ -32,7 +36,7 @@ function Priest:attack(dt)
     if self.timeSinceLastAttack >= self.attackInterval then
         local target = Board:getRandomAliveEnemy()
         if target then
-            target:minusHealth(self.attackDamage)
+            target:minusHealth(self.attackDamage*self.damageMultiplier)
         end
         self.timeSinceLastAttack = 0;
     end
@@ -44,7 +48,7 @@ function CreatePriest()
     --Starting Spells--
     local Heal = SpellList.Heal(newPriest);
     table.insert(newPriest.spells, Heal);
-    Board.spellBar:setInNextSlot(Heal);
+    --Board.spellBar:setInNextSlot(Heal);
     return newPriest;
 end
 

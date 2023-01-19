@@ -35,9 +35,14 @@ function FeralLunge:cast(target)
         return
     end
     local additionalDamage = (target:getMaxHealth() - target:getHealth())*self.lostHealthMultiplier;
-    target:minusHealth(self.damage + additionalDamage);
+    target:minusHealth((self.damage + additionalDamage)*self.damageHealMultiplier);
     self.castingUnit:minusMana(self.manaCost);
     self.currentCooldown = self.maxCooldown;
+
+    -----------------------------
+    --NONAPPLICABLE MULTIPLIERS--
+    -----------------------------
+    self.durationMultiplier = 0;
 end
 
 function CreateFeralLunge(caster)

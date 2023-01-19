@@ -5,12 +5,14 @@ local SpellList = require("Spells.SpellList");
 local Board = require("Core.Board");
 local BasicTank = {};
 local UnitIdentifierList = require("Units.UnitIdentifierList");
+local ImageList = require("Images.ImageList");
 ----------------
 ----ANALYSIS----
 ----------------
 -- The basic tank you start with. High hp, extremely low damage.
 ---------------
 function BasicTank:init()
+    self.image = ImageList.BasicTank;
     self.maxHealth = 5000;
     self.health = self.maxHealth;
     self.attackDamage = 10;
@@ -25,6 +27,8 @@ function BasicTank:init()
 
     self.isTank = true;
     self.name = UnitIdentifierList.BasicTank;
+
+    self.description = "The basic tank - High health, extremely low damage. Has a heavy attack that deals some damage.";
 end
 
 function BasicTank:attack(dt)

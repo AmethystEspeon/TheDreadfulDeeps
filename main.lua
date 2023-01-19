@@ -3,10 +3,10 @@ local UnitList = require("Units.UnitList");
 local Board = require("Core.Board");
 local PlayerInput = require("Core.PlayerInput");
 local SceneList = require("Core.SceneList");
-local Reward = require("Core.Reward");
 local SpellBook = require("Core.SpellBook");
 local UnitCardPool = require("Units.UnitCardPool");
 local EnemyDirector = require("Directors.EnemyDirector");
+local RewardDirector = require("Directors.RewardDirector");
 
 local initialized = false;
 
@@ -30,23 +30,17 @@ local function changeSceneFromFight()
     elseif Board:getNumberAliveEnemies() == 0 then
         local currentTokens = EnemyDirector:getTokens();
         EnemyDirector:addTokens(currentTokens*0.1);
-        
-        --TODO: USE REWARD DIRECTOR
-        local reward1=Reward:generateSpellReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
-        --print(reward1.name)
-        Reward:addReward(reward1);
-        local reward2=Reward:generateSpellReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
-        --print(reward2.name)
-        Reward:addReward(reward2);
-        local reward3=Reward:generateSpellReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
-        --print(reward3.name)
-        Reward:addReward(reward3);
-
+        RewardDirector:getRewards()
         SceneList.currentScene = SceneList.reward;
     end
 end
 
 local function changeSceneFromReward(reward)
+    local player = Board:getPlayer();
+    player:disableItemEffects();
+    player.manaPerSecond = player.manaPerSecond + player.manaRegenPerLevel;
+    player.maxMana = player.maxMana + player.maxManaPerLevel;
+    player:enableItemEffects();
     Board:healAfterFight(.20)
     Board:resetEnemyBoard();
     UnitCardPool:resetEnemyPool();
@@ -70,27 +64,14 @@ Board:addAlly(dps3);
 Board:addAlly(tank);
 SpellBook:init();
 --Testing Spells Here-
-table.insert(player.spells, SpellList.PrayToDarkness(player));
-Board.spellBar.spellFrames[2]:setSpell(player.spells[2]);
 SpellBook:setSpellsInSpellBook();
 
     UnitCardPool:init();
     EnemyDirector:init();
-    Reward:init();
+    RewardDirector:init();
     --TODO: REPLACE THIS
     EnemyDirector:fillBoard();
     initialized = true;
-
-
-    local reward1=Reward:generateSpellReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
-    --print(reward1.name)
-    Reward:addReward(reward1);
-    local reward2=Reward:generateSpellReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
-    --print(reward2.name)
-    Reward:addReward(reward2);
-    local reward3=Reward:generateSpellReward(SpellIdentifierList.Rarity.Common, SpellIdentifierList.Rarity.Legendary);
-    --print(reward3.name)
-    Reward:addReward(reward3);
 end
 
 function love.draw()
@@ -100,7 +81,7 @@ function love.draw()
         Board:drawSpells();
     end
     if SceneList.currentScene == SceneList.reward then
-        Reward:drawReward()
+        RewardDirector:drawRewards()
     end
     if SceneList.currentScene == SceneList.spellBook then
         Board:drawSpells();
@@ -118,7 +99,10 @@ function love.update(dt)
         Board:tickAllCooldowns(dt);
         Board:reapAuras();
     end
-    if SceneList.currentScene == SceneList.reward and #Reward.rewards.children == 0 then
+    if SceneList.currentScene == SceneList.reward and #RewardDirector.rewardFrame.children == 0 then
+        if RewardDirector.currentReward then
+            return;
+        end
         changeSceneFromReward();
         SpellBook:setSpellsInSpellBook();
         SpellBook:setNextScene(SceneList.fight, true);
@@ -156,7 +140,7 @@ function love.mousereleased(x,y,button,istouch,presses)
     if SceneList.currentScene == SceneList.reward and button == 1 then
         local reward = PlayerInput:rewardMouseReleased(x,y);
         if reward then
-            Reward:chooseReward(reward, Board:getPlayer());
+            RewardDirector:chooseReward(reward);
         end
         return;
     end

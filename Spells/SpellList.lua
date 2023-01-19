@@ -11,6 +11,8 @@ SpellList = {
     Atonement = unpack(require("Spells.Atonement")),
     HeavyAttack = unpack(require("Spells.HeavyAttack")),
     ScatterDisease = unpack(require("Spells.ScatterDisease")),
+    LavaWave = unpack(require("Spells.LavaWave")),
+    Bombard = unpack(require("Spells.Bombard")),
 };
 
 return SpellList;

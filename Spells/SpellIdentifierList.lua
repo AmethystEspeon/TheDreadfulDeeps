@@ -20,14 +20,14 @@ SpellIdentifierList ={
     },
 
     Upgrades = {
-        Damage = "Damage",
-        Healing = "Healing",
-        Shields = "Shields",
-        TickRate = "Tick Rate",
-        Cooldown = "Cooldown",
-        Duration = "Duration",
-        ManaCost = "Mana Cost",
-        Effect = "Effect",
+        DamageHeal = "Damage or Heal Upgrade",
+        Shields = "Shield Upgrade",
+        TickRate = "Tick Rate Upgrade",
+        Cooldown = "Cooldown Upgrade",
+        Duration = "Duration Upgrade",
+        ManaCost = "Mana Cost Upgrade",
+        Effect = "Effect Upgrade",
+        Special = "Special Upgrade",
     }
 }
 

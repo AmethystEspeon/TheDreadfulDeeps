@@ -173,7 +173,7 @@ end
 
 function Reward:generateUpgradeReward(minimumRarity, maximumRarity)
     --TODO: Implement weighted pool for upgrades
-    local upgradeList = Board:getPlayer():getSpellUpgrades();
+    local upgradeList = Board:getPlayer():getUniqueUpgrades();
     local reward = upgradeList[math.random(#upgradeList)]
     reward.inRewards = true;
     return reward;

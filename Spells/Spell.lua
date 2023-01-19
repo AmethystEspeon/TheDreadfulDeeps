@@ -1,11 +1,15 @@
 local Create = require("Core.Create");
-
+local SpellIdentifierList = require("Spells.SpellIdentifierList");
 Spell = {};
 
 function Spell:init()
     self.description = "test"
     self.spell = true;
     self.timeSincePressed = 0.25;
+
+    self.cooldownMultiplier = 1;
+    self.damageHealMultiplier = 1;
+    self.durationMultiplier = 1;
 end
 
 function Spell:drawCooldown(x, y, scale)
@@ -53,7 +57,7 @@ end
 
 function Spell:tickCooldown(dt)
     if self.currentCooldown and self.currentCooldown > 0 then
-        self.currentCooldown = self.currentCooldown - dt;
+        self.currentCooldown = self.currentCooldown - dt*self.cooldownMultiplier;
     end
     if self.currentCooldown < 0 then
         self.currentCooldown = 0;
@@ -73,9 +77,20 @@ function Spell:isCastable(target)
             return false;
         end
     end
+
+    -----------------
+    --DEATH RELATED--
+    -----------------
     if self.castingUnit:isDead() and not self.castableWhileDead then
         print("Cannot cast while dead");
         return false;
+    end
+
+    ------------------
+    --TARGET RELATED--
+    ------------------
+    if self.aoe then
+        return true;
     end
     if self.castingUnit:isSameTeam(target) and not self.castableOnSame then
         print("Cannot cast on same team");
@@ -85,6 +100,9 @@ function Spell:isCastable(target)
         print("Cannot cast on opposing team");
         return false;
     end
+    ------------------
+    --HEALTH RELATED--
+    ------------------
     if target:isDead() and not self.castableOnDead then
         print("Cannot cast on dead");
         return false;
@@ -94,6 +112,17 @@ function Spell:isCastable(target)
         return false;
     end
     return true;
+end
+
+--Add Upgrade--
+function Spell:upgrade(upgradeTable)
+    if self.damageHealMultiplier ~= 0 and upgradeTable.upgradeType == SpellIdentifierList.Upgrades.DamageHeal then
+        self.damageHealMultiplier = self.damageHealMultiplier + .1;
+    elseif self.cooldownMultiplier ~= 0 and upgradeTable.upgradeType == SpellIdentifierList.Upgrades.Cooldown then
+        self.cooldownMultiplier = self.cooldownMultiplier + .1;
+    elseif self.durationMultiplier ~= 0 and upgradeTable.upgradeType == SpellIdentifierList.Upgrades.Duration then
+        self.durationMultiplier = self.durationMultiplier + .1;
+    end
 end
 
 function CreateSpell()

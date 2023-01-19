@@ -20,7 +20,7 @@ end
 -----------------
 --SPELL REWARDS--
 -----------------
-function Player:getSpellUpgrades()
+function Player:getUniqueUpgrades()
     local spellUpgrades = {};
     for i, k in ipairs(self.spells) do
         for j, l in ipairs(k.upgrades) do
@@ -29,9 +29,17 @@ function Player:getSpellUpgrades()
             end
         end
     end
+    return spellUpgrades;
 end
 
 -----------------
+
+function Player:useItems()
+    for i, k in ipairs(self.items) do
+        k:use();
+    end
+end
+
 function CreatePlayer()
     return Create(Unit, Ally, Player)
 end
