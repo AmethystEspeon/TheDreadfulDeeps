@@ -1,4 +1,4 @@
-# Healing Game (WIP, Name TBD)
+# The Damned Deeps (WIP)
 
 INSTALLATION/COMPILING
 ------------------
