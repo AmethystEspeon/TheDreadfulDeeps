@@ -1,4 +1,4 @@
-# The Damned Deeps (WIP)
+# The Dreadful Deeps (WIP)
 
 INSTALLATION/COMPILING
 ------------------
